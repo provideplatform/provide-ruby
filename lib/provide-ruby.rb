@@ -14,6 +14,10 @@ require 'provide-ruby/models/route'
 require 'provide-ruby/models/work_order'
 
 module Provide
+  API_TOKEN = ENV['API_TOKEN'] || (raise ArgumentError.new('API_TOKEN environment variable must be set'))
+  API_TOKEN_SECRET = ENV['API_TOKEN_SECRET'] || (raise ArgumentError.new('API_TOKEN_SECRET environment variable must be set'))
+  API_COMPANY_ID = ENV['API_COMPANY_ID'] || (raise ArgumentError.new('API_COMPANY_ID environment variable must be set'))
+
   class << self
     def run
       routes = {}
@@ -59,7 +63,7 @@ module Provide
         route_obj[:customers].each do |customer_id, customer|
           work_order = Provide::WorkOrder.new
           work_order[:id] = customer[:work_order][:id] if customer[:work_order] && customer[:work_order][:id]
-          work_order[:company_id] = '3'
+          work_order[:company_id] = API_COMPANY_ID
           work_order[:customer_id] = customer_id
           work_order[:preferred_scheduled_start_date] = provider_origin_assignment[:start_date]
           work_order[:gtins_ordered] = customer[:products].map { |product| product[:gtin] }
@@ -117,7 +121,7 @@ module Provide
       }
       customer[:customer_number] = payload[:customer_number]
       customer[:contact] = contact
-      customer[:company_id] = '3'
+      customer[:company_id] = API_COMPANY_ID
       customer.save
       customer
     end
@@ -156,7 +160,7 @@ module Provide
         mobile: nil,
       }
       provider[:contact] = contact
-      provider[:company_id] = '3'
+      provider[:company_id] = API_COMPANY_ID
       provider.save
       provider
     end

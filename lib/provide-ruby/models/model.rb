@@ -1,7 +1,3 @@
-API_TOKEN = '00ec1b22-c244-4a63-8501-ab7c60273f57'
-API_TOKEN_SECRET = 'b70592a5b0fef8a214922cacaed04835'
-API_COMPANY_ID = '3'
-
 module Provide
   class Model < HashWithIndifferentAccess
     class << self

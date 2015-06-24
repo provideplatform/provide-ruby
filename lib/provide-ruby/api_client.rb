@@ -1,9 +1,9 @@
 require 'typhoeus'
 
-API_SCHEME = 'https'
-API_HOST = 'provide.services'
-API_USER_AGENT = 'provide-ruby api'
-API_MAX_ATTEMPTS = 5
+API_SCHEME = ENV['API_SCHEME'] || 'https'
+API_HOST = ENV['API_HOST'] || 'provide.services'
+API_USER_AGENT = ENV['API_USER_AGENT'] || 'provide-ruby api'
+API_MAX_ATTEMPTS = (ENV['API_MAX_ATTEMPTS'] || 5).to_i
 
 module Provide
   class ApiClient
