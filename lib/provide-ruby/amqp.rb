@@ -2,12 +2,6 @@ require 'bunny'
 
 module Provide
   class AMQP
-    HOST = ENV['AMQP_HOST'] || 'mfrm1.provide.services'
-    SUBSCRIBE_QUEUE = ENV['AMQP_SUBSCRIBE_QUEUE'] || 'MFMRM'
-    PUBLISH_QUEUE = ENV['AMQP_PUBLISH_QUEUE'] || 'provide'
-    USERNAME = ENV['AMQP_USERNAME'] || 'provide'
-    PASSWORD = ENV['AMQP_PASSWORD'] || 'provide'
-    
     def initialize
       @queues = { }
     end
@@ -36,7 +30,11 @@ module Provide
     
     def conn
       @conn ||= begin
-        conn = Bunny.new(host: HOST, user: USERNAME, password: PASSWORD)
+        host = ENV['AMQP_HOST'] || 'localhost'
+        username = ENV['AMQP_USERNAME']
+        password = ENV['AMQP_PASSWORD']
+
+        conn = username && password ? Bunny.new(host: host, user: username, password: password) : Bunny.new(host: host)
         conn.start
       end
     end

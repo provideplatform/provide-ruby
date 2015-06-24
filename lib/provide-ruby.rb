@@ -22,8 +22,11 @@ module Provide
     def run
       routes = {}
 
+      subscribe_queue = ENV['AMQP_SUBSCRIBE_QUEUE'] || (raise ArgumentError.new('AMQP_SUBSCRIBE_QUEUE environment variable must be set'))
+      publish_queue = ENV['AMQP_PUBLISH_QUEUE'] || (raise ArgumentError.new('AMQP_PUBLISH_QUEUE environment variable must be set'))
+
       amqp = Provide::AMQP.new
-      amqp.process_queue(Provide::AMQP::SUBSCRIBE_QUEUE) do |raw_payload|
+      amqp.process_queue(subscribe_queue) do |raw_payload|
         payload = JSON.parse(raw_payload).with_indifferent_access
         payload.keys.each do |raw_key|
           key = raw_key.downcase.strip.gsub(/\s+/, '_')
@@ -89,7 +92,7 @@ module Provide
             provider_id: provider[:id],
             route_id: route_obj[:id]
           }
-          amqp.queue(Provide::AMQP::PUBLISH_QUEUE).publish(message_payload.to_json)
+          amqp.queue(publish_queue).publish(message_payload.to_json)
         end
       end
     rescue StandardError => e
