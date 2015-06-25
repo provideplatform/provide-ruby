@@ -162,7 +162,7 @@ module Provide
         state: nil,
         zip: nil,
         time_zone_id: 'Eastern Time (US & Canada)', # FIXME
-        email: nil,
+        email: "kyle+provider#{payload[:contractor_name].downcase.split(/\s+/)[0].trim}@unmarkedconsulting.com",
         phone: nil,
         mobile: nil,
       }
