@@ -6,6 +6,8 @@ require 'provide-ruby/amqp'
 require 'provide-ruby/api_client'
 require 'provide-ruby/models/model'
 require 'provide-ruby/models/customer'
+require 'provide-ruby/models/dispatcher'
+require 'provide-ruby/models/dispatcher_origin_assignment'
 require 'provide-ruby/models/market'
 require 'provide-ruby/models/origin'
 require 'provide-ruby/models/product'
@@ -19,6 +21,7 @@ module Provide
   API_TOKEN_SECRET = ENV['API_TOKEN_SECRET'] || (raise ArgumentError.new('API_TOKEN_SECRET environment variable must be set'))
   API_COMPANY_ID = ENV['API_COMPANY_ID'] || (raise ArgumentError.new('API_COMPANY_ID environment variable must be set'))
   API_MARKET_ID = ENV['API_MARKET_ID'] || (raise ArgumentError.new('API_MARKET_ID environment variable must be set'))
+  API_DISPATCHER_ID = ENV['API_MARKET_ID'] || (raise ArgumentError.new('API_MARKET_ID environment variable must be set'))
 
   class << self
     def run
@@ -40,6 +43,8 @@ module Provide
         product = save_product(payload)
         customer = save_customer(payload)
         origin = save_origin(payload)
+        dispatcher = nil #save_dispatcher(payload)
+        dispatcher_origin_assignment = save_dispatcher_origin_assignment(dispatcher, origin, payload)
         provider = save_provider(payload)
         provider_origin_assignment = save_provider_origin_assignment(provider, origin, payload)
 
@@ -47,6 +52,7 @@ module Provide
           landing_sks: [],
           customers: {},
           route_id: payload[:route_id],
+          dispatcher_origin_assignment: dispatcher_origin_assignment,
           provider_origin_assignment: provider_origin_assignment,
           products: [],
           work_order_ids: []
@@ -151,6 +157,40 @@ module Provide
       origin[:contact] = contact
       origin.save
       origin
+    end
+
+    def save_dispatcher(payload)
+      dispatcher = Provide::Dispatcher.new
+      contact = {
+          name: nil,
+          address1: nil,
+          city: nil,
+          state: nil,
+          zip: nil,
+          time_zone_id: 'Eastern Time (US & Canada)', # FIXME
+          email: nil,
+          phone: nil,
+          mobile: nil,
+      }
+      dispatcher[:contact] = contact
+      dispatcher[:company_id] = API_COMPANY_ID
+      dispatcher.save
+      dispatcher
+    end
+
+    def save_dispatcher_origin_assignment(dispatcher, origin, payload)
+      dispatcher_origin_assignment = Provide::DispatcherOriginAssignment.new
+      dispatcher_origin_assignment[:market_id] = origin[:market_id]
+      dispatcher_origin_assignment[:origin_id] = origin[:id]
+      dispatcher_origin_assignment[:dispatcher_id] = dispatcher ? dispatcher[:id] : API_DISPATCHER_ID
+
+      date = payload[:ship_date].split(/\//)
+      date = "#{date[2]}-#{date[0]}-#{date[1]}"
+
+      dispatcher_origin_assignment[:start_date] = date
+      dispatcher_origin_assignment[:end_date] = date
+      dispatcher_origin_assignment.save
+      dispatcher_origin_assignment
     end
     
     def save_provider(payload)
