@@ -6,6 +6,7 @@ require 'provide-ruby/amqp'
 require 'provide-ruby/api_client'
 require 'provide-ruby/models/model'
 require 'provide-ruby/models/customer'
+require 'provide-ruby/models/market'
 require 'provide-ruby/models/origin'
 require 'provide-ruby/models/product'
 require 'provide-ruby/models/provider'
@@ -95,6 +96,8 @@ module Provide
           amqp.queue(publish_queue).publish(message_payload.to_json)
         end
       end
+
+      routes
     rescue StandardError => e
       puts "caught standard error #{e}"
     end
