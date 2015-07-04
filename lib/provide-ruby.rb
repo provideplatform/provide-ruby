@@ -65,9 +65,9 @@ module Provide
             end_time: payload[:end_time]
           }
 
-          routes[delivery_run_id][:landing_sks] << payload[:landing_sk]
           routes[delivery_run_id][:products] << product
-          routes[delivery_run_id][:customers][customer[:id]] ||= { work_order: nil, products: []}
+          routes[delivery_run_id][:landing_sks] << payload[:landing_sk]
+          routes[delivery_run_id][:customers][customer[:id]] ||= { landing_sks: [], products: [], work_order: nil }
           routes[delivery_run_id][:customers][customer[:id]][:products] << product
         rescue StandardError => e
           failed_payload = {
@@ -86,13 +86,12 @@ module Provide
       end
       
       routes.each do |delivery_run_id, route_obj|
-        landing_sks = route_obj[:landing_sks]
-        puts "landing sks: #{landing_sks}"
         ## TODO- calculate missing # of products using landing_sks.count - products.count
 
+        customers = route_obj[:customers].values
         provider_origin_assignment = route_obj[:provider_origin_assignment]
         provider = provider_origin_assignment[:provider]
-        
+
         route_obj[:customers].each do |customer_id, customer|
           work_order = Provide::WorkOrder.new # FIXME -- make sure work order operation is idempotent
           work_order[:id] = customer[:work_order][:id] if customer[:work_order] && customer[:work_order][:id]
@@ -100,10 +99,12 @@ module Provide
           work_order[:customer_id] = customer_id
           work_order[:preferred_scheduled_start_date] = provider_origin_assignment[:start_date]
           work_order[:gtins_ordered] = customer[:products].map { |product| product[:gtin] }
+          #work_order[:landing_sk] = customer[:landing_sks]
           work_order[:work_order_providers] = [ { provider_id: provider[:id] } ]
 
           work_order.save
 
+          route_obj[:work_orders] << work_order unless route_obj[:work_order_ids].include?(work_order[:id])
           route_obj[:work_order_ids] << work_order[:id] unless route_obj[:work_order_ids].include?(work_order[:id])
         end
         
@@ -111,15 +112,20 @@ module Provide
         route[:name] = route_obj[:zone_code] #"#{route_obj[:start_time]} - #{route_obj[:end_time]}"
         route[:identifier] = delivery_run_id
         route[:date] = provider_origin_assignment[:start_date]
+        route[:dispatcher_origin_assignment_id] = nil #dispatcher_origin_assignment[:id] #FIXME make sure dispatcher origin assignment is set
         route[:provider_origin_assignment_id] = provider_origin_assignment[:id]
-        route[:dispatcher_origin_assignment_id] = nil #dispatcher_origin_assignment[:id]
         route[:work_order_ids] = route_obj[:work_order_ids]
         route.save
+        
+        landing_sks = route_obj[:landing_sks]
+        
+        puts "landing sks length: #{landing_sks.size}; work orders length: #{route_obj.work_orders.size}"
 
-        route_obj[:work_order_ids].each do |work_order_id|
+        route_obj[:work_orders].each do |work_order|
+          landing_sk = landing_sks.shift unless landing_sks.size == 0
           message_payload = {
-            landing_sks: landing_sks,
-            work_order_id: work_order_id,
+            landing_sk: landing_sk,
+            work_order_id: work_order[:id],
             provider_id: provider[:id],
             route_id: route[:id]
           }
