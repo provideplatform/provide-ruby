@@ -210,7 +210,7 @@ module Provide
       dispatcher_origin_assignment[:dispatcher_id] = dispatcher ? dispatcher[:id] : API_DISPATCHER_ID
 
       date = payload[:ship_date].split(/\//)
-      date = "#{date[2]}-#{date[0]}-#{date[1]}"
+      date = Date.today.to_s #"#{date[2]}-#{date[0]}-#{date[1]}"
 
       dispatcher_origin_assignment[:start_date] = date
       dispatcher_origin_assignment[:end_date] = date
@@ -244,7 +244,7 @@ module Provide
       provider_origin_assignment[:provider_id] = provider[:id]
       
       date = payload[:ship_date].split(/\//)
-      date = "#{date[2]}-#{date[0]}-#{date[1]}"
+      date = Date.today.to_s #"#{date[2]}-#{date[0]}-#{date[1]}"
       
       provider_origin_assignment[:start_date] = date
       provider_origin_assignment[:end_date] = date
