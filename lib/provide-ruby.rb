@@ -59,6 +59,7 @@ module Provide
             dispatcher_origin_assignment: dispatcher_origin_assignment,
             provider_origin_assignment: provider_origin_assignment,
             products: [],
+            work_orders: [],
             work_order_ids: [],
             zone_code: payload[:zone_code],
             start_time: payload[:start_time],
@@ -67,7 +68,7 @@ module Provide
 
           routes[delivery_run_id][:products] << product
           routes[delivery_run_id][:landing_sks] << payload[:landing_sk]
-          routes[delivery_run_id][:customers][customer[:id]] ||= { landing_sks: [], products: [], work_order: nil }
+          routes[delivery_run_id][:customers][customer[:id]] ||= { products: [], work_order: nil }
           routes[delivery_run_id][:customers][customer[:id]][:products] << product
         rescue StandardError => e
           failed_payload = {
@@ -85,7 +86,9 @@ module Provide
         end
       end
       
+puts "#{routes}"
       routes.each do |delivery_run_id, route_obj|
+        landing_sks = route_obj[:landing_sks]
         ## TODO- calculate missing # of products using landing_sks.count - products.count
 
         customers = route_obj[:customers].values
@@ -99,7 +102,6 @@ module Provide
           work_order[:customer_id] = customer_id
           work_order[:preferred_scheduled_start_date] = provider_origin_assignment[:start_date]
           work_order[:gtins_ordered] = customer[:products].map { |product| product[:gtin] }
-          #work_order[:landing_sk] = customer[:landing_sks]
           work_order[:work_order_providers] = [ { provider_id: provider[:id] } ]
 
           work_order.save
@@ -119,12 +121,12 @@ module Provide
         
         landing_sks = route_obj[:landing_sks]
         
-        puts "landing sks length: #{landing_sks.size}; work orders length: #{route_obj.work_orders.size}"
+        puts "landing sks length: #{landing_sks.size}; work orders length: #{route_obj[:work_orders].size}"
 
         route_obj[:work_orders].each do |work_order|
           landing_sk = landing_sks.shift unless landing_sks.size == 0
           message_payload = {
-            landing_sk: landing_sk,
+            landing_sks: landing_sks,
             work_order_id: work_order[:id],
             provider_id: provider[:id],
             route_id: route[:id]
@@ -159,7 +161,7 @@ module Provide
         state: payload[:state],
         zip: payload[:zipcode],
         time_zone_id: 'Eastern Time (US & Canada)', # FIXME
-        email: "kyle+#{payload[:customer_name].split(/\s+/)[0].strip.downcase}@unmarkedconsulting.com", # FIXME-- be very sure we are ready when uncommenting here... payload['email']
+        email: "kyle+#{payload[:customer_name].gsub(/\s+/, '').strip.downcase}@unmarkedconsulting.com", # FIXME-- be very sure we are ready when uncommenting here... payload['email']
         phone: '8599673476', # FIXME-- be very sure we are ready when uncommenting here... payload['phone_1']
         mobile: '8599673476', # FIXME-- be very sure we are ready when uncommenting here... payload['phone_2']
       }
@@ -216,7 +218,7 @@ module Provide
       dispatcher_origin_assignment[:dispatcher_id] = dispatcher ? dispatcher[:id] : API_DISPATCHER_ID
 
       date = payload[:ship_date].split(/\//)
-      date = Date.today.to_s #"#{date[2]}-#{date[0]}-#{date[1]}"
+      date = '2015-07-05' #"#{date[2]}-#{date[0]}-#{date[1]}"
 
       dispatcher_origin_assignment[:start_date] = date
       dispatcher_origin_assignment[:end_date] = date
@@ -233,7 +235,7 @@ module Provide
         state: nil,
         zip: nil,
         time_zone_id: 'Eastern Time (US & Canada)', # FIXME
-        email: "kyle+provider#{payload[:contractor_name].downcase.split(/\s+/)[0].strip}@unmarkedconsulting.com",
+        email: "kyle+asprovider#{payload[:contractor_name].downcase.gsub(/\s+/, '').strip}@unmarkedconsulting.com",
         phone: nil,
         mobile: nil,
       }
@@ -250,7 +252,7 @@ module Provide
       provider_origin_assignment[:provider_id] = provider[:id]
       
       date = payload[:ship_date].split(/\//)
-      date = Date.today.to_s #"#{date[2]}-#{date[0]}-#{date[1]}"
+      date = '2015-07-05' #"#{date[2]}-#{date[0]}-#{date[1]}"
       
       provider_origin_assignment[:start_date] = date
       provider_origin_assignment[:end_date] = date
