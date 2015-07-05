@@ -86,7 +86,6 @@ module Provide
         end
       end
       
-puts "#{routes}"
       routes.each do |delivery_run_id, route_obj|
         landing_sks = route_obj[:landing_sks]
         ## TODO- calculate missing # of products using landing_sks.count - products.count
@@ -119,12 +118,7 @@ puts "#{routes}"
         route[:work_order_ids] = route_obj[:work_order_ids]
         route.save
         
-        landing_sks = route_obj[:landing_sks]
-        
-        puts "landing sks length: #{landing_sks.size}; work orders length: #{route_obj[:work_orders].size}"
-
         route_obj[:work_orders].each do |work_order|
-          landing_sk = landing_sks.shift unless landing_sks.size == 0
           message_payload = {
             landing_sks: landing_sks,
             work_order_id: work_order[:id],
