@@ -115,7 +115,7 @@ module Provide
         route[:name] = route_obj[:zone_code] #"#{route_obj[:start_time]} - #{route_obj[:end_time]}"
         route[:identifier] = zone_code
         route[:date] = provider_origin_assignment[:start_date] if provider_origin_assignment
-        route[:scheduled_start_at] = provider_origin_assignment[:scheduled_start_at] if provider_origin_assignment
+        # route[:scheduled_start_at] = provider_origin_assignment[:scheduled_start_at] if provider_origin_assignment
         route[:dispatcher_origin_assignment_id] = dispatcher_origin_assignment[:id] if dispatcher_origin_assignment #FIXME make sure dispatcher origin assignment is set
         route[:provider_origin_assignment_id] = provider_origin_assignment[:id] if provider_origin_assignment
         route[:work_order_ids] = route_obj[:work_order_ids]
