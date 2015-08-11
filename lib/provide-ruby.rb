@@ -258,7 +258,7 @@ module Provide
       
       provider_origin_assignment[:start_date] = date
       provider_origin_assignment[:end_date] = date
-      provider_origin_assignment[:scheduled_start_at] = (Date.parse(date).to_datetime.midnight. + payload[:start_time]).to_datetime
+      provider_origin_assignment[:scheduled_start_at] = (Date.parse(date).to_datetime.midnight. + payload[:start_time].to_i).to_datetime
       #provider_origin_assignment[:scheduled_end_at] = date
       provider_origin_assignment.save
       provider_origin_assignment
