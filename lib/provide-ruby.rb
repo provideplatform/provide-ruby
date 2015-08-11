@@ -151,9 +151,11 @@ module Provide
     
     def save_customer(payload)
       customer = Provide::Customer.new
+      address_length = (payload[:address].rindex(payload[:city]) || payload[:address].length) - 1
+      address = payload[:address][0..address_length].strip
       contact = {
         name: payload[:customer_name], #"#{payload[:first_name]} #{payload[:last_name]}",
-        address1: payload[:address],
+        address1: address,
         city: payload[:city],
         state: payload[:state],
         zip: payload[:zipcode],
