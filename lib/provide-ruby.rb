@@ -1,3 +1,4 @@
+require 'active_support/core_ext/date_time/calculations'
 require 'active_support/core_ext/hash/indifferent_access'
 require 'base64'
 require 'json'
@@ -45,14 +46,14 @@ module Provide
           product = save_product(payload)
           customer = save_customer(payload)
           origin = save_origin(payload)
-          dispatcher = nil #save_dispatcher(payload)
+          dispatcher = save_dispatcher(payload)
           dispatcher_origin_assignment = save_dispatcher_origin_assignment(dispatcher, origin, payload)
           provider = save_provider(payload)
           provider_origin_assignment = save_provider_origin_assignment(provider, origin, payload)
           
-          delivery_run_id = payload[:delivery_run_id]
+          zone_code = payload[:zone_code]
 
-          routes[delivery_run_id] ||= { 
+          routes[zone_code] ||= { 
             landing_sks: [],
             customers: {},
             route_id: payload[:route_id],
@@ -66,10 +67,10 @@ module Provide
             end_time: payload[:end_time]
           }
 
-          routes[delivery_run_id][:products] << product
-          routes[delivery_run_id][:landing_sks] << payload[:landing_sk]
-          routes[delivery_run_id][:customers][customer[:id]] ||= { products: [], work_order: nil }
-          routes[delivery_run_id][:customers][customer[:id]][:products] << product
+          routes[zone_code][:products] << product
+          routes[zone_code][:landing_sks] << payload[:landing_sk]
+          routes[zone_code][:customers][customer[:id]] ||= { products: [], work_order: nil }
+          routes[zone_code][:customers][customer[:id]][:products] << product
         rescue StandardError => e
           failed_payload = {
             error: "#{e}",
@@ -86,13 +87,13 @@ module Provide
         end
       end
       
-      routes.each do |delivery_run_id, route_obj|
+      routes.each do |zone_code, route_obj|
         landing_sks = route_obj[:landing_sks]
         ## TODO- calculate missing # of products using landing_sks.count - products.count
 
         customers = route_obj[:customers].values
         provider_origin_assignment = route_obj[:provider_origin_assignment]
-        provider = provider_origin_assignment[:provider]
+        provider = provider_origin_assignment[:provider] 
 
         route_obj[:customers].each do |customer_id, customer|
           work_order = Provide::WorkOrder.new # FIXME -- make sure work order operation is idempotent
@@ -101,7 +102,7 @@ module Provide
           work_order[:customer_id] = customer_id
           work_order[:preferred_scheduled_start_date] = provider_origin_assignment[:start_date]
           work_order[:gtins_ordered] = customer[:products].map { |product| product[:gtin] }
-          work_order[:work_order_providers] = [ { provider_id: provider[:id] } ]
+          work_order[:work_order_providers] = [ { provider_id: provider[:id] } ] if provider
 
           work_order.save
 
@@ -111,10 +112,11 @@ module Provide
         
         route = Provide::Route.new
         route[:name] = route_obj[:zone_code] #"#{route_obj[:start_time]} - #{route_obj[:end_time]}"
-        route[:identifier] = delivery_run_id
-        route[:date] = provider_origin_assignment[:start_date]
-        route[:dispatcher_origin_assignment_id] = nil #dispatcher_origin_assignment[:id] #FIXME make sure dispatcher origin assignment is set
-        route[:provider_origin_assignment_id] = provider_origin_assignment[:id]
+        route[:identifier] = zone_code
+        route[:date] = provider_origin_assignment[:start_date] if provider_origin_assignment
+        route[:scheduled_start_at] = provider_origin_assignment[:scheduled_start_at] if provider_origin_assignment
+        route[:dispatcher_origin_assignment_id] = dispatcher_origin_assignment[:id] if dispatcher_origin_assignment #FIXME make sure dispatcher origin assignment is set
+        route[:provider_origin_assignment_id] = provider_origin_assignment[:id] if provider_origin_assignment
         route[:work_order_ids] = route_obj[:work_order_ids]
         route.save
         
@@ -122,7 +124,7 @@ module Provide
           message_payload = {
             landing_sks: landing_sks,
             work_order_id: work_order[:id],
-            provider_id: provider[:id],
+            provider_id: provider ? provider[:id] : nil,
             route_id: route[:id]
           }
           amqp.queue(publish_queue).publish(message_payload.to_json)
@@ -187,6 +189,7 @@ module Provide
     end
 
     def save_dispatcher(payload)
+      return Provide::Dispatcher.find(API_DISPATCHER_ID) if API_DISPATCHER_ID
       dispatcher = Provide::Dispatcher.new
       contact = {
           name: nil,
@@ -221,6 +224,7 @@ module Provide
     end
     
     def save_provider(payload)
+      return Provide::Provider.find(API_PROVIDER_ID) if API_PROVIDER_ID
       provider = Provide::Provider.new
       contact = {
         name: payload[:contractor_name],
@@ -229,7 +233,7 @@ module Provide
         state: nil,
         zip: nil,
         time_zone_id: 'Eastern Time (US & Canada)', # FIXME
-        email: "kyle+asprovider#{payload[:contractor_name].downcase.gsub(/\s+/, '').strip}@unmarkedconsulting.com",
+        email: "kyle+provider#{payload[:contractor_name].downcase.gsub(/\s+/, '').strip}@unmarkedconsulting.com",
         phone: nil,
         mobile: nil,
       }
@@ -243,13 +247,15 @@ module Provide
       provider_origin_assignment = Provide::ProviderOriginAssignment.new
       provider_origin_assignment[:market_id] = origin[:market_id]
       provider_origin_assignment[:origin_id] = origin[:id]
-      provider_origin_assignment[:provider_id] = provider[:id]
+      provider_origin_assignment[:provider_id] = provider ? provider[:id] : API_PROVIDER_ID
       
       date = payload[:ship_date].split(/\//)
-      date = '2015-07-05' #"#{date[2]}-#{date[0]}-#{date[1]}"
+      date = "#{date[2]}-#{date[0]}-#{date[1]}"
       
       provider_origin_assignment[:start_date] = date
       provider_origin_assignment[:end_date] = date
+      provider_origin_assignment[:scheduled_start_at] = (Date.parse(date).to_datetime.midnight. + payload[:start_time]).to_datetime
+      #provider_origin_assignment[:scheduled_end_at] = date
       provider_origin_assignment.save
       provider_origin_assignment
     end
