@@ -29,5 +29,5 @@ task :mfrm do
   require "provide-ruby"
 
   puts 'Running provide mfrm etl...'
-  #Provide.run
+  Provide.run
 end
