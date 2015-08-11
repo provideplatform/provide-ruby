@@ -22,8 +22,9 @@ module Provide
   API_TOKEN_SECRET = ENV['API_TOKEN_SECRET'] || (raise ArgumentError.new('API_TOKEN_SECRET environment variable must be set'))
   API_COMPANY_ID = ENV['API_COMPANY_ID'] || (raise ArgumentError.new('API_COMPANY_ID environment variable must be set'))
   API_MARKET_ID = ENV['API_MARKET_ID'] || (raise ArgumentError.new('API_MARKET_ID environment variable must be set'))
-  API_DISPATCHER_ID = ENV['API_MARKET_ID'] || (raise ArgumentError.new('API_MARKET_ID environment variable must be set'))
-  API_DATE_OVERRIDE = ENV['API_DATE_OVERRIDE'] || nil
+  API_DISPATCHER_ID = ENV['API_DISPATCHER_ID']
+  API_PROVIDER_ID = ENV['API_PROVIDER_ID']
+  API_DATE_OVERRIDE = ENV['API_DATE_OVERRIDE']
 
   class << self
     def run
