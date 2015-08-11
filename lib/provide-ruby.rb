@@ -94,9 +94,13 @@ module Provide
         ## TODO- calculate missing # of products using landing_sks.count - products.count
 
         customers = route_obj[:customers].values
+        
+        dispatcher_origin_assignment = route_obj[:dispatcher_origin_assignment]
+        dispatcher = dispatcher_origin_assignment[:dispatcher] 
+        
         provider_origin_assignment = route_obj[:provider_origin_assignment]
         provider = provider_origin_assignment[:provider] 
-
+        
         route_obj[:customers].each do |customer_id, customer|
           work_order = Provide::WorkOrder.new # FIXME -- make sure work order operation is idempotent
           work_order[:id] = customer[:work_order][:id] if customer[:work_order] && customer[:work_order][:id]
