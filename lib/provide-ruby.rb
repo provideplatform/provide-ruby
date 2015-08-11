@@ -1,5 +1,6 @@
 require 'active_support/core_ext/date_time/calculations'
 require 'active_support/core_ext/hash/indifferent_access'
+require 'active_support/core_ext/numeric/time'
 require 'base64'
 require 'json'
 require 'provide-ruby/version'
@@ -16,6 +17,8 @@ require 'provide-ruby/models/provider'
 require 'provide-ruby/models/provider_origin_assignment'
 require 'provide-ruby/models/route'
 require 'provide-ruby/models/work_order'
+
+require 'pry'
 
 module Provide
   API_TOKEN = ENV['API_TOKEN'] || (raise ArgumentError.new('API_TOKEN environment variable must be set'))
@@ -262,7 +265,7 @@ module Provide
       
       provider_origin_assignment[:start_date] = date
       provider_origin_assignment[:end_date] = date
-      provider_origin_assignment[:scheduled_start_at] = (Date.parse(date).to_datetime.midnight. + payload[:start_time].to_i).to_datetime
+      provider_origin_assignment[:scheduled_start_at] = (Date.parse(date).to_datetime.midnight.to_time + payload[:start_time].to_i.seconds).to_datetime.utc.iso8601
       #provider_origin_assignment[:scheduled_end_at] = date
       provider_origin_assignment.save
       provider_origin_assignment
