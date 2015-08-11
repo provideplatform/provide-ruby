@@ -23,6 +23,7 @@ module Provide
   API_COMPANY_ID = ENV['API_COMPANY_ID'] || (raise ArgumentError.new('API_COMPANY_ID environment variable must be set'))
   API_MARKET_ID = ENV['API_MARKET_ID'] || (raise ArgumentError.new('API_MARKET_ID environment variable must be set'))
   API_DISPATCHER_ID = ENV['API_MARKET_ID'] || (raise ArgumentError.new('API_MARKET_ID environment variable must be set'))
+  API_DATE_OVERRIDE = ENV['API_DATE_OVERRIDE'] || nil
 
   class << self
     def run
@@ -215,7 +216,7 @@ module Provide
       dispatcher_origin_assignment[:dispatcher_id] = dispatcher ? dispatcher[:id] : API_DISPATCHER_ID
 
       date = payload[:ship_date].split(/\//)
-      date = '2015-07-05' #"#{date[2]}-#{date[0]}-#{date[1]}"
+      date = API_DATE_OVERRIDE || "#{date[2]}-#{date[0]}-#{date[1]}"
 
       dispatcher_origin_assignment[:start_date] = date
       dispatcher_origin_assignment[:end_date] = date
@@ -250,7 +251,7 @@ module Provide
       provider_origin_assignment[:provider_id] = provider ? provider[:id] : API_PROVIDER_ID
       
       date = payload[:ship_date].split(/\//)
-      date = "#{date[2]}-#{date[0]}-#{date[1]}"
+      date = API_DATE_OVERRIDE || "#{date[2]}-#{date[0]}-#{date[1]}"
       
       provider_origin_assignment[:start_date] = date
       provider_origin_assignment[:end_date] = date
