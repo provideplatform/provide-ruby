@@ -69,8 +69,8 @@ module Provide
             work_orders: [],
             work_order_ids: [],
             zone_code: payload[:zone_code],
-            start_time: payload[:start_time],
-            end_time: payload[:end_time]
+            start_time: payload[:start_time].to_i,
+            end_time: payload[:end_time].to_i
           }
 
           routes[zone_code][:products] << product
@@ -267,7 +267,7 @@ module Provide
       
       date = payload[:ship_date].split(/\//)
       date = API_DATE_OVERRIDE || Date.parse("#{date[2]}-#{date[0]}-#{date[1]}").to_s rescue nil
-      
+
       calc_scheduled_start_at = ->(dte) {
         (Date.parse(dte).to_datetime.midnight.to_time + payload[:start_time].to_i.seconds).to_datetime.utc
       }
@@ -276,7 +276,7 @@ module Provide
       if DateTime.now > scheduled_start_at && API_FORCE_SCHEDULE
         # date = (Date.parse(date) + 1.day).to_s
         # scheduled_start_at = calc_scheduled_start_at.call(date)
-        scheduled_start_at = DateTime.now + 1.hour
+        scheduled_start_at = (DateTime.now.to_time + 1.hour).to_datetime.utc
       end
 
       provider_origin_assignment[:start_date] = date
