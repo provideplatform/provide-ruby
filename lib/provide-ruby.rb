@@ -271,13 +271,14 @@ module Provide
       calc_scheduled_start_at = ->(dte) {
         (Date.parse(dte).to_datetime.midnight.to_time + payload[:start_time].to_i.seconds).to_datetime.utc
       }
-      
+
       scheduled_start_at = calc_scheduled_start_at.call(date)
       if DateTime.now > scheduled_start_at && API_FORCE_SCHEDULE
-        date = (Date.parse(date) + 1.day).to_s
-        scheduled_start_at = calc_scheduled_start_at.call(date)
+        # date = (Date.parse(date) + 1.day).to_s
+        # scheduled_start_at = calc_scheduled_start_at.call(date)
+        scheduled_start_at = DateTime.now + 1.hour
       end
-      
+
       provider_origin_assignment[:start_date] = date
       provider_origin_assignment[:end_date] = date
 
