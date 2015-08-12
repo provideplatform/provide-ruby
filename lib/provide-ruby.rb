@@ -28,7 +28,7 @@ module Provide
   API_DISPATCHER_ID = ENV['API_DISPATCHER_ID']
   API_PROVIDER_ID = ENV['API_PROVIDER_ID']
   API_DATE_OVERRIDE = ENV['API_DATE_OVERRIDE']
-  API_FORCE_SCHEDULE = ENV['API_FORCE_SCHEDULE'].match(/^true$/i)
+  API_FORCE_SCHEDULE = ENV['API_FORCE_SCHEDULE'].to_s.match(/^true$/i)
 
   class << self
     def run
@@ -58,7 +58,7 @@ module Provide
           provider_origin_assignment = save_provider_origin_assignment(provider, origin, payload)
           
           zone_code = payload[:zone_code]
-
+          
           routes[zone_code] ||= { 
             landing_sks: [],
             customers: {},
@@ -92,10 +92,9 @@ module Provide
           amqp.queue(failed_queue).publish(failed_payload.to_json)
         end
       end
-      
+            
       routes.each do |zone_code, route_obj|
         landing_sks = route_obj[:landing_sks]
-        ## TODO- calculate missing # of products using landing_sks.count - products.count
 
         customers = route_obj[:customers].values
         
@@ -121,14 +120,19 @@ module Provide
         end
         
         route = Provide::Route.new
-        route[:name] = route_obj[:zone_code] #"#{route_obj[:start_time]} - #{route_obj[:end_time]}"
+        route[:name] = route_obj[:zone_code]
         route[:identifier] = zone_code
         route[:date] = provider_origin_assignment[:start_date] if provider_origin_assignment
-        # route[:scheduled_start_at] = provider_origin_assignment[:scheduled_start_at] if provider_origin_assignment
-        route[:dispatcher_origin_assignment_id] = dispatcher_origin_assignment[:id] if dispatcher_origin_assignment #FIXME make sure dispatcher origin assignment is set
+        #route[:scheduled_start_at] = provider_origin_assignment[:scheduled_start_at] if provider_origin_assignment
+        route[:dispatcher_origin_assignment_id] = dispatcher_origin_assignment[:id] if dispatcher_origin_assignment
         route[:provider_origin_assignment_id] = provider_origin_assignment[:id] if provider_origin_assignment
         route[:work_order_ids] = route_obj[:work_order_ids]
         route.save
+        
+        puts "------------------------------------------------"
+        puts "ROUTE SAVED: #{route}"
+        puts "ROUTE STATUS: #{route[:id]} == #{route[:status]}"
+        puts "------------------------------------------------"
         
         route_obj[:work_orders].each do |work_order|
           message_payload = {
@@ -227,7 +231,7 @@ module Provide
       dispatcher_origin_assignment[:dispatcher_id] = dispatcher ? dispatcher[:id] : API_DISPATCHER_ID
 
       date = payload[:ship_date].split(/\//)
-      date = API_DATE_OVERRIDE || "#{date[2]}-#{date[0]}-#{date[1]}"
+      date = API_DATE_OVERRIDE || Date.parse("#{date[2]}-#{date[0]}-#{date[1]}").to_s rescue nil
 
       dispatcher_origin_assignment[:start_date] = date
       dispatcher_origin_assignment[:end_date] = date
@@ -262,14 +266,23 @@ module Provide
       provider_origin_assignment[:provider_id] = provider ? provider[:id] : API_PROVIDER_ID
       
       date = payload[:ship_date].split(/\//)
-      date = API_DATE_OVERRIDE || "#{date[2]}-#{date[0]}-#{date[1]}"
+      date = API_DATE_OVERRIDE || Date.parse("#{date[2]}-#{date[0]}-#{date[1]}").to_s rescue nil
+      
+      calc_scheduled_start_at = ->(dte) {
+        (Date.parse(dte).to_datetime.midnight.to_time + payload[:start_time].to_i.seconds).to_datetime.utc
+      }
+      
+      scheduled_start_at = calc_scheduled_start_at.call(date)
+      if DateTime.now > scheduled_start_at && API_FORCE_SCHEDULE
+        date = (Date.parse(date) + 1.day).to_s
+        scheduled_start_at = calc_scheduled_start_at.call(date)
+      end
       
       provider_origin_assignment[:start_date] = date
       provider_origin_assignment[:end_date] = date
-      scheduled_start_at = (Date.parse(date).to_datetime.midnight.to_time + payload[:start_time].to_i.seconds).to_datetime.utc
-      scheduled_start_at = (scheduled_start_at.to_time + 24.hours).to_datetime.utc if API_FORCE_SCHEDULE && DateTime.now > scheduled_start_at
+
       provider_origin_assignment[:scheduled_start_at] = scheduled_start_at.iso8601
-      #provider_origin_assignment[:scheduled_end_at] = date
+      #provider_origin_assignment[:scheduled_end_at] = (scheduled_start_at.to_time + (payload[:end_time].to_i - payload[:start_time].to_i).seconds).to_datetime.iso8601
       provider_origin_assignment.save
       provider_origin_assignment
     end
