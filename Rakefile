@@ -19,6 +19,7 @@ task :mfrm do
   ENV['API_DISPATCHER_ID'] = '20'
   ENV['API_PROVIDER_ID'] = '302'
   ENV['API_DATE_OVERRIDE'] = Date.today.to_s
+  ENV['API_FORCE_SCHEDULE'] = true
   ENV['AMQP_SUBSCRIBE_QUEUE'] = 'mfrm_router'
   ENV['AMQP_PUBLISH_QUEUE'] = 'provide'
   ENV['AMQP_FAILED_QUEUE'] = 'provide_failed'
