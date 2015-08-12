@@ -28,6 +28,7 @@ module Provide
   API_DISPATCHER_ID = ENV['API_DISPATCHER_ID']
   API_PROVIDER_ID = ENV['API_PROVIDER_ID']
   API_DATE_OVERRIDE = ENV['API_DATE_OVERRIDE']
+  API_FORCE_SCHEDULE = ENV['API_FORCE_SCHEDULE'].match(/^true$/i)
 
   class << self
     def run
@@ -265,7 +266,9 @@ module Provide
       
       provider_origin_assignment[:start_date] = date
       provider_origin_assignment[:end_date] = date
-      provider_origin_assignment[:scheduled_start_at] = (Date.parse(date).to_datetime.midnight.to_time + payload[:start_time].to_i.seconds).to_datetime.utc.iso8601
+      scheduled_start_at = (Date.parse(date).to_datetime.midnight.to_time + payload[:start_time].to_i.seconds).to_datetime.utc
+      scheduled_start_at = (scheduled_start_at.to_time + 24.hours).to_datetime.utc if API_FORCE_SCHEDULE && DateTime.now > scheduled_start_at
+      provider_origin_assignment[:scheduled_start_at] = scheduled_start_at.iso8601
       #provider_origin_assignment[:scheduled_end_at] = date
       provider_origin_assignment.save
       provider_origin_assignment
