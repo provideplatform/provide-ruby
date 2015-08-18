@@ -25,10 +25,13 @@ module Provide
   API_TOKEN_SECRET = ENV['API_TOKEN_SECRET'] || (raise ArgumentError.new('API_TOKEN_SECRET environment variable must be set'))
   API_COMPANY_ID = ENV['API_COMPANY_ID'] || (raise ArgumentError.new('API_COMPANY_ID environment variable must be set'))
   API_MARKET_ID = ENV['API_MARKET_ID'] || (raise ArgumentError.new('API_MARKET_ID environment variable must be set'))
+  API_ORIGIN_ID = ENV['API_ORIGIN_ID']
   API_DISPATCHER_ID = ENV['API_DISPATCHER_ID']
   API_PROVIDER_ID = ENV['API_PROVIDER_ID']
+  API_CUSTOMER_ID = ENV['API_CUSTOMER_ID']
   API_DATE_OVERRIDE = ENV['API_DATE_OVERRIDE']
   API_FORCE_SCHEDULE = ENV['API_FORCE_SCHEDULE'].to_s.match(/^true$/i)
+  API_ORDERED_PRODUCTS_COUNT = ENV['API_ORDERED_PRODUCTS_COUNT']
 
   class << self
     def run
@@ -92,7 +95,7 @@ module Provide
           amqp.queue(failed_queue).publish(failed_payload.to_json)
         end
       end
-            
+
       routes.each do |zone_code, route_obj|
         landing_sks = route_obj[:landing_sks]
 
@@ -151,6 +154,142 @@ module Provide
       retry
     end
     
+    def seed_test
+      # ENV['API_COMPANY_ID'] = '1'
+      # ENV['API_CUSTOMER_ID'] = '3483'
+      # ENV['API_MARKET_ID'] = '7'
+      # ENV['API_DISPATCHER_ID'] = '20'
+      # ENV['API_PROVIDER_ID'] = '1'
+      # ENV['API_DATE_OVERRIDE'] = nil
+      # ENV['API_FORCE_SCHEDULE'] = 'true'
+      # ENV['API_ORDERED_PRODUCTS_COUNT'] = '3'
+
+      zone_code = ('a'..'z').to_a.shuffle[0,5].join,
+      ship_date = Date.today.to_s.gsub(/-/i, '/')
+      
+      payload = {
+        zone_code: zone_code,
+        ship_date: ship_date
+      }
+      
+      products = []
+      
+      (API_ORDERED_PRODUCTS_COUNT || [1, 2, 3, 4, 5].sample).times do
+        products << save_product({
+          variant_number: ('a'..'z').to_a.shuffle[0,16].join.upcase,
+          product_name: Faker::Commerce.product_name,
+          size: ['TWIN', 'QUEEN', 'KING'].sample
+        }).with_indifferent_access
+      end
+
+      seed_delivery(payload.with_indifferent_access, products)
+    end
+
+    def seed_delivery(payload, products = nil)
+      begin
+        product = save_product(payload) unless products
+        products ||= [product]
+        customer = save_customer(payload)
+        origin = save_origin(payload)
+        dispatcher = save_dispatcher(payload)
+        dispatcher_origin_assignment = save_dispatcher_origin_assignment(dispatcher, origin, payload)
+        provider = save_provider(payload)
+        provider_origin_assignment = save_provider_origin_assignment(provider, origin, payload)
+        
+        zone_code = payload[:zone_code]
+        
+        route_obj = { 
+          landing_sks: [],
+          customers: {},
+          route_id: nil,
+          dispatcher_origin_assignment: dispatcher_origin_assignment,
+          provider_origin_assignment: provider_origin_assignment,
+          products: [],
+          work_orders: [],
+          work_order_ids: [],
+          zone_code: payload[:zone_code],
+          start_time: payload[:start_time].to_i,
+          end_time: payload[:end_time].to_i
+        }
+
+        route_obj[:products] = products
+        route_obj[:landing_sks] << payload[:landing_sk]
+        route_obj[:customers][customer[:id]] ||= { products: [], work_order: nil }
+        route_obj[:customers][customer[:id]][:products] = products
+        
+        landing_sks = route_obj[:landing_sks]
+
+        customers = route_obj[:customers].values
+        
+        dispatcher_origin_assignment = route_obj[:dispatcher_origin_assignment]
+        dispatcher = dispatcher_origin_assignment[:dispatcher] 
+        
+        provider_origin_assignment = route_obj[:provider_origin_assignment]
+        provider = provider_origin_assignment[:provider] 
+        
+        route_obj[:customers].each do |customer_id, customer|
+          work_order = Provide::WorkOrder.new # FIXME -- make sure work order operation is idempotent
+          work_order[:id] = customer[:work_order][:id] if customer[:work_order] && customer[:work_order][:id]
+          work_order[:company_id] = API_COMPANY_ID
+          work_order[:customer_id] = customer_id
+          work_order[:preferred_scheduled_start_date] = provider_origin_assignment[:start_date]
+          work_order[:gtins_ordered] = customer[:products].map { |product| product[:gtin] }
+          work_order[:work_order_providers] = [ { provider_id: provider[:id] } ] if provider
+
+          work_order.save
+
+          route_obj[:work_orders] << work_order unless route_obj[:work_order_ids].include?(work_order[:id])
+          route_obj[:work_order_ids] << work_order[:id] unless route_obj[:work_order_ids].include?(work_order[:id])
+        end
+        
+        route = Provide::Route.new
+        route[:name] = route_obj[:zone_code]
+        route[:identifier] = zone_code
+        route[:date] = provider_origin_assignment[:start_date] if provider_origin_assignment
+        #route[:scheduled_start_at] = provider_origin_assignment[:scheduled_start_at] if provider_origin_assignment
+        route[:dispatcher_origin_assignment_id] = dispatcher_origin_assignment[:id] if dispatcher_origin_assignment
+        route[:provider_origin_assignment_id] = provider_origin_assignment[:id] if provider_origin_assignment
+        route[:work_order_ids] = route_obj[:work_order_ids]
+        route.save
+        
+        puts "------------------------------------------------"
+        puts "ROUTE SAVED: #{route}"
+        puts "ROUTE STATUS: #{route[:id]} == #{route[:status]}"
+        puts "------------------------------------------------"
+        
+        route_obj[:work_orders].each do |work_order|
+          message_payload = {
+            landing_sks: landing_sks,
+            work_order_id: work_order[:id],
+            provider_id: provider ? provider[:id] : nil,
+            route_id: route[:id]
+          }
+          
+          puts "------------------------------------------------"
+          puts "WORK ORDER MESSAGE TO BE PUBLISHED FOR ROUTE: #{route[:zone_code]}"
+          puts "#{message_payload}"
+          puts "------------------------------------------------"
+        end
+      rescue StandardError => e
+        failed_payload = {
+          error: "#{e}",
+          raw: payload,
+          product: product,
+          customer: customer,
+          origin: origin,
+          dispatcher: dispatcher,
+          dispatcher_origin_assignment: dispatcher_origin_assignment,
+          provider: provider,
+          provider_origin_assignment: provider_origin_assignment
+        }
+
+        puts "------------------------------------------------"
+        puts "[WARNING] FAILED TO SEED TEST ROUTE"
+        puts "[WARNING] ROUTE STATUS: #{failed_payload}"
+        puts "------------------------------------------------"
+      end
+    end
+    
     def save_product(payload)
       product = Provide::Product.new
       product[:data] = {
@@ -163,6 +302,7 @@ module Provide
     end
     
     def save_customer(payload)
+      return Provide::Customer.find(API_CUSTOMER_ID) if API_CUSTOMER_ID
       customer = Provide::Customer.new
       address_length = (payload[:address].rindex(payload[:city]) || payload[:address].length) - 1
       address = payload[:address][0..address_length].strip
@@ -185,6 +325,7 @@ module Provide
     end
     
     def save_origin(payload)
+      return Provide::Origin.find(API_MARKET_ID, API_ORIGIN_ID) if API_MARKET_ID && API_ORIGIN_ID
       origin = Provide::Origin.new
       origin[:market_id] = API_MARKET_ID
       contact = {

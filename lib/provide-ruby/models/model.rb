@@ -4,7 +4,7 @@ module Provide
       def find(id)
         model = self.new
         uri = model.uri
-        req = model.api_client.get(uri, id: id)
+        req = uri.split(/\//i).size == 1 ? model.api_client.get("#{uri}/#{id}") : model.api_client.get(uri, id: id)
         response = JSON.parse(req.response_body)
         response = response[0] if response.is_a?(Array) && response.size == 1
         model.merge!(response) if req.code == 200

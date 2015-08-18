@@ -9,6 +9,28 @@ task :console do
   exec 'irb -r provide-ruby -I ./lib'
 end
 
+task :cottage do
+  ENV['API_SCHEME'] = 'http'
+  ENV['API_HOST'] = '52.5.92.0' #'api-production-us-east-595727586.us-east-1.elb.amazonaws.com'
+  ENV['API_TOKEN'] = 'dc754995-75cb-4545-950b-517d3d37d8dc' #'6091f60f-b583-456a-8992-4389a0e4ff83'
+  ENV['API_TOKEN_SECRET'] = '07776e04567a6c61f25259def7e18c6f' #'bcca731223217f3dd7fb2d66882be7ed'
+  ENV['API_COMPANY_ID'] = '1'
+  ENV['API_CUSTOMER_ID'] = '3483'
+  ENV['API_MARKET_ID'] = '7'
+  ENV['API_ORIGIN_ID'] = '486'
+  ENV['API_DISPATCHER_ID'] = '1'
+  ENV['API_PROVIDER_ID'] = '1'
+  ENV['API_DATE_OVERRIDE'] = nil
+  ENV['API_FORCE_SCHEDULE'] = 'true'
+
+  require 'bundler/setup'
+  require 'faker'
+  require 'provide-ruby'
+
+  puts 'Running cottage circle route seed...'
+  Provide.seed_test
+end
+
 task :mfrm do
   ENV['API_SCHEME'] = 'http'
   ENV['API_HOST'] = '52.5.92.0' #'api-production-us-east-595727586.us-east-1.elb.amazonaws.com'
@@ -27,8 +49,8 @@ task :mfrm do
   ENV['AMQP_USERNAME'] = 'provide'
   ENV['AMQP_PASSWORD'] = 'provide'
 
-  require "bundler/setup"
-  require "provide-ruby"
+  require 'bundler/setup'
+  require 'provide-ruby'
 
   puts 'Running provide mfrm etl...'
   Provide.run
