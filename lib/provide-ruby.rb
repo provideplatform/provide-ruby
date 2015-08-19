@@ -165,11 +165,13 @@ module Provide
       # ENV['API_ORDERED_PRODUCTS_COUNT'] = '3'
 
       zone_code = ('a'..'z').to_a.shuffle[0,5].join,
-      ship_date = Date.today.to_s.gsub(/-/i, '/')
+      ship_date = DateTime.now.utc.to_date.to_s.gsub(/-/i, '/')
       
       payload = {
         zone_code: zone_code,
         ship_date: ship_date
+        # start_time: 900,
+        # end_time: 1800
       }
       
       products = []
