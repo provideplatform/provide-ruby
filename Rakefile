@@ -19,7 +19,7 @@ task :cottage do
   ENV['API_MARKET_ID'] = '7'
   ENV['API_ORIGIN_ID'] = '486'
   ENV['API_DISPATCHER_ID'] = '1'
-  ENV['API_PROVIDER_ID'] = '1'
+  ENV['API_PROVIDER_ID'] = '2'
   ENV['API_DATE_OVERRIDE'] = nil
   ENV['API_FORCE_SCHEDULE'] = 'true'
 
