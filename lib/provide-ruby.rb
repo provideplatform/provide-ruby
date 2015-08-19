@@ -32,6 +32,7 @@ module Provide
   API_DATE_OVERRIDE = ENV['API_DATE_OVERRIDE']
   API_FORCE_SCHEDULE = ENV['API_FORCE_SCHEDULE'].to_s.match(/^true$/i)
   API_ORDERED_PRODUCTS_COUNT = ENV['API_ORDERED_PRODUCTS_COUNT']
+  API_DUPLICATE_ORDERED_PRODUCT = ENV['API_DUPLICATE_ORDERED_PRODUCT']
 
   class << self
     def run
@@ -155,15 +156,6 @@ module Provide
     end
     
     def seed_test
-      # ENV['API_COMPANY_ID'] = '1'
-      # ENV['API_CUSTOMER_ID'] = '3483'
-      # ENV['API_MARKET_ID'] = '7'
-      # ENV['API_DISPATCHER_ID'] = '20'
-      # ENV['API_PROVIDER_ID'] = '1'
-      # ENV['API_DATE_OVERRIDE'] = nil
-      # ENV['API_FORCE_SCHEDULE'] = 'true'
-      # ENV['API_ORDERED_PRODUCTS_COUNT'] = '3'
-
       zone_code = ('a'..'z').to_a.shuffle[0,5].join,
       ship_date = DateTime.now.utc.to_date.to_s.gsub(/-/i, '/')
       
@@ -176,12 +168,16 @@ module Provide
       
       products = []
       
-      (API_ORDERED_PRODUCTS_COUNT || [1, 2, 3, 4, 5].sample).times do
+      (API_ORDERED_PRODUCTS_COUNT || [1, 2, 3, 4, 5].sample).to_i.times do
         products << save_product({
           variant_number: ('a'..'z').to_a.shuffle[0,16].join.upcase,
           product_name: Faker::Commerce.product_name,
           size: ['TWIN', 'QUEEN', 'KING'].sample
         }).with_indifferent_access
+      end
+      
+      if API_DUPLICATE_ORDERED_PRODUCT.to_s.match(/^true$/i)
+        [1, 2, 3].sample.times { products << products.sample }
       end
 
       seed_delivery(payload.with_indifferent_access, products)

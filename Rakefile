@@ -22,6 +22,8 @@ task :cottage do
   ENV['API_PROVIDER_ID'] = '2'
   ENV['API_DATE_OVERRIDE'] = nil
   ENV['API_FORCE_SCHEDULE'] = 'true'
+  ENV['API_ORDERED_PRODUCTS_COUNT'] = '5'
+  ENV['API_DUPLICATE_ORDERED_PRODUCT'] = 'true'
 
   require 'bundler/setup'
   require 'faker'
