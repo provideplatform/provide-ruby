@@ -33,6 +33,83 @@ task :cottage do
   Provide.seed_test
 end
 
+task :mwcleaners_customer do
+  require 'faker'
+  
+  ENV['API_SCHEME'] = 'http'
+  ENV['API_HOST'] = '52.5.92.0' #'api-production-us-east-595727586.us-east-1.elb.amazonaws.com'
+  ENV['API_TOKEN'] = '22465739-54da-460d-bf4b-4c484ceba038' #'0366b928-4119-48b6-a352-bded1dd01a73' #'6091f60f-b583-456a-8992-4389a0e4ff83'
+  ENV['API_TOKEN_SECRET'] = 'a0574a586f55971e875b79bc73a45fbf' #'13c12aacc6851606fcd2f5bb60c87166' #'bcca731223217f3dd7fb2d66882be7ed'
+  ENV['API_COMPANY_ID'] = '13'
+
+  require 'bundler/setup'
+  require 'provide-ruby'
+  
+  address_zip_pairs = [
+    ['2526 potomac unit b', '77057'],
+    ['5822 Burlinghall', '77035'],
+    ['3747 University Blvd', '77005'],
+    ['4806 Palm St', '77401'],
+    ['6432 Ella Lee Ln #4', '77057'],
+    ['7575 BISSONET #278', '77074'],
+    ['3902 Drake', '77005'],
+    ['1009 W 24th St', '77008'],
+    ['4410 Westheimer Rd apt 3439', '77027']
+  ]
+  
+  address_zip_pairs.size.times do
+    address_zip_pair = address_zip_pairs.shift
+    
+    payload = {
+      customer_name: "#{Faker::Name.first_name} #{Faker::Name.last_name}",
+      address: address_zip_pair.first,
+      city: 'Houston',
+      state: 'TX',
+      zipcode: address_zip_pair.last,
+      time_zone_id: 'Central Time (US & Canada)'
+    }
+
+    customer = Provide::Customer.new
+    address_length = (payload[:address].rindex(payload[:city]) || payload[:address].length) - 1
+    address = payload[:address][0..address_length].strip
+    contact = {
+      name: payload[:customer_name], #"#{payload[:first_name]} #{payload[:last_name]}",
+      address1: address,
+      city: payload[:city],
+      state: payload[:state],
+      zip: payload[:zipcode],
+      time_zone_id: 'Eastern Time (US & Canada)', # FIXME
+      email: "kyle+#{payload[:customer_name].gsub(/\s+/, '').strip.downcase}@unmarkedconsulting.com", # FIXME-- be very sure we are ready when uncommenting here... payload['email']
+      phone: '8599673476', # FIXME-- be very sure we are ready when uncommenting here... payload['phone_1']
+      mobile: '8599673476', # FIXME-- be very sure we are ready when uncommenting here... payload['phone_2']
+    }
+    customer[:customer_number] = payload[:customer_number]
+    customer[:contact] = contact
+    customer[:company_id] = ENV['API_COMPANY_ID']
+    customer.save
+  
+    puts "customer created: #{customer}"
+  end
+end
+
+task :mwcleaners do
+  ENV['API_SCHEME'] = 'http'
+  ENV['API_HOST'] = '52.5.92.0' #'api-production-us-east-595727586.us-east-1.elb.amazonaws.com'
+  ENV['API_TOKEN'] = '22465739-54da-460d-bf4b-4c484ceba038' #'0366b928-4119-48b6-a352-bded1dd01a73' #'6091f60f-b583-456a-8992-4389a0e4ff83'
+  ENV['API_TOKEN_SECRET'] = 'a0574a586f55971e875b79bc73a45fbf' #'13c12aacc6851606fcd2f5bb60c87166' #'bcca731223217f3dd7fb2d66882be7ed'
+  ENV['API_COMPANY_ID'] = '13'
+  ENV['API_MARKET_ID'] = nil
+  ENV['API_DISPATCHER_ID'] = nil
+  ENV['API_PROVIDER_ID'] = nil
+  ENV['API_DATE_OVERRIDE'] = nil
+  ENV['API_FORCE_SCHEDULE'] = 'true'
+
+  require 'bundler/setup'
+  require 'provide-ruby'
+
+  #Provide.run
+end
+
 task :mfrm do
   ENV['API_SCHEME'] = 'http'
   ENV['API_HOST'] = '52.5.92.0' #'api-production-us-east-595727586.us-east-1.elb.amazonaws.com'

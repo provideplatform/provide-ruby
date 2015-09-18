@@ -24,7 +24,7 @@ module Provide
   API_TOKEN = ENV['API_TOKEN'] || (raise ArgumentError.new('API_TOKEN environment variable must be set'))
   API_TOKEN_SECRET = ENV['API_TOKEN_SECRET'] || (raise ArgumentError.new('API_TOKEN_SECRET environment variable must be set'))
   API_COMPANY_ID = ENV['API_COMPANY_ID'] || (raise ArgumentError.new('API_COMPANY_ID environment variable must be set'))
-  API_MARKET_ID = ENV['API_MARKET_ID'] || (raise ArgumentError.new('API_MARKET_ID environment variable must be set'))
+  API_MARKET_ID = ENV['API_MARKET_ID'] #|| (raise ArgumentError.new('API_MARKET_ID environment variable must be set'))
   API_ORIGIN_ID = ENV['API_ORIGIN_ID']
   API_DISPATCHER_ID = ENV['API_DISPATCHER_ID']
   API_PROVIDER_ID = ENV['API_PROVIDER_ID']
