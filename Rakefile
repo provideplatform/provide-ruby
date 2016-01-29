@@ -140,6 +140,12 @@ require 'resque/tasks'
 task 'resque:setup' do
   lib_path = "#{File.dirname(__FILE__)}/lib"
   require "#{lib_path}/provide-ruby.rb"
+
+  redis_url = ENV['REDIS_URL']
+  if redis_url
+    uri = URI.parse(redis_url)
+    Resque.redis = Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
+  end
 end
 
 task :houzz do
