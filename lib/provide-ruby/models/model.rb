@@ -10,6 +10,11 @@ module Provide
         model.merge!(response) if req.code == 200
         model
       end
+      
+      def where(params)
+        model = self.new
+        model.api_client.get("#{model.uri}", params)
+      end
     end
 
     def api_client
@@ -32,7 +37,7 @@ module Provide
     end
 
     def save
-      self[:company_id] ||= API_COMPANY_ID
+      self[:company_id] ||= API_COMPANY_ID if API_COMPANY_ID
       if self[:id]
         req = api_client.put("#{uri}/#{self[:id]}", self)
       else

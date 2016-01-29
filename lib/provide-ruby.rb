@@ -10,6 +10,7 @@ require 'provide-ruby/models/model'
 require 'provide-ruby/models/customer'
 require 'provide-ruby/models/dispatcher'
 require 'provide-ruby/models/dispatcher_origin_assignment'
+require 'provide-ruby/models/lead'
 require 'provide-ruby/models/market'
 require 'provide-ruby/models/origin'
 require 'provide-ruby/models/product'
@@ -17,13 +18,15 @@ require 'provide-ruby/models/provider'
 require 'provide-ruby/models/provider_origin_assignment'
 require 'provide-ruby/models/route'
 require 'provide-ruby/models/work_order'
+require 'provide-ruby/scrapers/scraper'
+require 'provide-ruby/scrapers/houzz'
 
 require 'pry'
 
 module Provide
   API_TOKEN = ENV['API_TOKEN'] || (raise ArgumentError.new('API_TOKEN environment variable must be set'))
   API_TOKEN_SECRET = ENV['API_TOKEN_SECRET'] || (raise ArgumentError.new('API_TOKEN_SECRET environment variable must be set'))
-  API_COMPANY_ID = ENV['API_COMPANY_ID'] || (raise ArgumentError.new('API_COMPANY_ID environment variable must be set'))
+  API_COMPANY_ID = ENV['API_COMPANY_ID'] #|| (raise ArgumentError.new('API_COMPANY_ID environment variable must be set'))
   API_MARKET_ID = ENV['API_MARKET_ID'] #|| (raise ArgumentError.new('API_MARKET_ID environment variable must be set'))
   API_ORIGIN_ID = ENV['API_ORIGIN_ID']
   API_DISPATCHER_ID = ENV['API_DISPATCHER_ID']
