@@ -137,18 +137,6 @@ end
 
 require 'resque/tasks'
 
-namespace :resque do
-  # depend on the environment
-  task setup: :environment
-
-  task :quit_instance_workers do
-    worker_pids = `ps axu | grep resque | grep $(whoami) | awk '!/grep/ && !/rake/ {print $2}'`.split(/\n/)
-    worker_pids.each do |pid|
-      `kill -QUIT #{pid}`
-    end
-  end
-end
-
 task :houzz do
   ENV['API_SCHEME'] = 'https'
   ENV['API_HOST'] = 'provide.services'
