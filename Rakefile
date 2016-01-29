@@ -137,6 +137,11 @@ end
 
 require 'resque/tasks'
 
+task 'resque:setup' do
+  lib_path = "#{File.dirname(__FILE__)}/lib"
+  require "#{lib_path}/provide-ruby.rb"
+end
+
 task :houzz do
   ENV['API_SCHEME'] = 'https'
   ENV['API_HOST'] = 'provide.services'
