@@ -137,7 +137,7 @@ module Provide
 
             refresh_details.call
 
-            lead.merge(listing)
+            lead.merge!(listing)
             lead.save
           end
         end

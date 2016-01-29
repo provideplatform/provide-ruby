@@ -137,10 +137,9 @@ end
 
 task :houzz do
   ENV['API_SCHEME'] = 'https'
-  ENV['API_HOST'] = 'provide.services' #'api-production-us-east-595727586.us-east-1.elb.amazonaws.com'
-  ENV['API_TOKEN'] = '0366b928-4119-48b6-a352-bded1dd01a73' #'6091f60f-b583-456a-8992-4389a0e4ff83'
-  ENV['API_TOKEN_SECRET'] = '13c12aacc6851606fcd2f5bb60c87166' #'bcca731223217f3dd7fb2d66882be7ed'
-  
+  ENV['API_HOST'] = 'provide.services'
+  ENV['API_TOKEN'] = 'e3ab4133-e2fc-422b-a7d2-bfd105c5ae52'
+  ENV['API_TOKEN_SECRET'] = '886ef00fabbd9b5e07cb1694e0f71fa5'
   require 'bundler/setup'
   require 'provide-ruby'
   
