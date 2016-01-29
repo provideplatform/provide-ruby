@@ -1,3 +1,5 @@
+require 'resque'
+
 module Provide
   class Houzz < Scraper
     class << self
