@@ -158,3 +158,15 @@ task :houzz do
   
   binding.pry
 end
+
+task :emser do
+  ENV['API_SCHEME'] = 'https'
+  ENV['API_HOST'] = 'provide.services'
+  ENV['API_TOKEN'] = 'a4427885-3e41-4632-b3bd-9eeb70cd2a2c'
+  ENV['API_TOKEN_SECRET'] = '370bcce241b6567a22be85be060d300b'
+  ENV['API_COMPANY_ID'] = '25'
+  require 'bundler/setup'
+  require 'provide-ruby'
+  
+  binding.pry
+end
