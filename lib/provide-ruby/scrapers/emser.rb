@@ -83,6 +83,7 @@ module Provide
               product[:data][:style] = style
               product[:data][:size] = size[:size]
               product[:data][:color] = color
+              binding.pry
               product[:product_image_url] = image_url unless product[:image_url] || image_url.nil?
               product.save
             end
