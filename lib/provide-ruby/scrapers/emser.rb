@@ -35,7 +35,9 @@ module Provide
           material_html = Nokogiri::HTML(page.html)
           
           sizes_table = material_html.css('div#collectionContent div.jspPane table').last rescue nil
-          standard_sizes = sizes_table.css('tbody tr td').map { |td| td.text.strip }
+          standard_sizes = sizes_table.css('tbody tr td').map { |td| td.text.strip } rescue nil
+          puts "URL skipped: #{material_url}"
+          next unless standard_sizes
           standard_sizes.reject! { |size| !size.match(/mesh/i).nil? }
           mozaic_sizes = sizes_table.css('tbody tr td').map { |td| td.text.strip }
           mozaic_sizes.reject! { |size| size.match(/mesh/i).nil? }
@@ -81,6 +83,7 @@ module Provide
               product[:data][:style] = style
               product[:data][:size] = size[:size]
               product[:data][:color] = color
+              product[:product_image_url] = image_url unless product[:image_url] || image_url.nil?
               product.save
             end
           end
