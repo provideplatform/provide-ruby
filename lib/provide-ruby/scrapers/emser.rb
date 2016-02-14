@@ -36,7 +36,7 @@ module Provide
           
           sizes_table = material_html.css('div#collectionContent div.jspPane table').last rescue nil
           standard_sizes = sizes_table.css('tbody tr td').map { |td| td.text.strip } rescue nil
-          puts "URL skipped: #{material_url}"
+          puts "URL skipped: #{material_url}" unless standard_sizes
           next unless standard_sizes
           standard_sizes.reject! { |size| !size.match(/mesh/i).nil? }
           mozaic_sizes = sizes_table.css('tbody tr td').map { |td| td.text.strip }
@@ -66,6 +66,8 @@ module Provide
             color = header.css('div.jspPane h1')[1].text rescue nil
             style = header.css('div.jspPane h2').first.text.downcase rescue nil
             
+            image_url = "#{base_url}/#{product_html.css('div#collectionContent div#thumbs').first.css('img').first.attr('src')}" rescue nil
+            
             sizes = []
             sizes_container = header.css('div.jspPane div').first
             sizes_container.css('li').each do |raw_size|
@@ -83,7 +85,6 @@ module Provide
               product[:data][:style] = style
               product[:data][:size] = size[:size]
               product[:data][:color] = color
-              binding.pry
               product[:product_image_url] = image_url unless product[:image_url] || image_url.nil?
               product.save
             end
