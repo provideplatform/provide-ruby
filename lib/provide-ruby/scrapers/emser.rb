@@ -35,24 +35,26 @@ module Provide
           material_html = Nokogiri::HTML(page.html)
           
           sizes_table = material_html.css('div#collectionContent div.jspPane table').last rescue nil
-          standard_sizes = sizes_table.css('tbody tr td').map { |td| td.text.strip } rescue nil
-          puts "URL skipped: #{material_url}" unless standard_sizes
-          next unless standard_sizes
+          
+          standard_sizes = sizes_table.css('tbody tr td').map { |td| td.text.strip } rescue []
           standard_sizes.reject! { |size| !size.match(/mesh/i).nil? }
-          mozaic_sizes = sizes_table.css('tbody tr td').map { |td| td.text.strip }
+          mozaic_sizes = sizes_table.css('tbody tr td').map { |td| td.text.strip } rescue []
           mozaic_sizes.reject! { |size| size.match(/mesh/i).nil? }
+          
+          puts "URL skipped: #{material_url}" unless standard_sizes || mozaic_sizes
+          next unless standard_sizes || mozaic_sizes
           
           color_urls = []
           material_html.css('div#collectionContent div.colorsTable').first.css('tbody tr a').each do |color_anchor|
             color_urls << "#{base_url}#{color_anchor.attr('href')}"
-          end
+          end if material_html && material_html.css('div#collectionContent div.colorsTable').size > 0
           color_urls.uniq!
           color_urls.reject! { |url| url == base_url }
           
           mozaic_urls = []
           material_html.css('div#collectionContent div.colorsTable').last.css('tbody tr a').each do |mozaic_anchor|
             mozaic_urls << "#{base_url}#{mozaic_anchor.attr('href')}"
-          end if material_html.css('div#collectionContent div.colorsTable').size == 2
+          end if material_html && material_html.css('div#collectionContent div.colorsTable').size == 2
           mozaic_urls.uniq!
           mozaic_urls.reject! { |url| url == base_url }
           
