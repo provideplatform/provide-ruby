@@ -71,7 +71,45 @@ module Provide
             sizes = []
             sizes_container = header.css('div.jspPane div').first
             sizes_container.css('li').each do |raw_size|
-              sizes << { size: (raw_size.css('b').text.strip rescue nil), gtin: (raw_size.text.split(/"/).last.strip[1..raw_size.text.split(/"/).last.strip.length] rescue nil) }
+              size = raw_size.css('b').text.strip rescue nil
+              gtin = raw_size.text.split(/"/).last.strip[1..raw_size.text.split(/"/).last.strip.length] rescue nil
+              sizes << { size: size, gtin: gtin } if size.to_s.match(/^\d+\" x \d+\"$/i) && gtin && gtin.length > 0
+            end
+            
+            sizes.each do |size|
+              next unless size[:gtin] && size[:size]
+              response = Product.where(company_id: API_COMPANY_ID, gtin: size[:gtin])
+              product = response && response.code == 200 ? (Product.new(JSON.parse(response.body).try(:first)) || Product.new) : Product.new
+              product[:gtin] ||= size[:gtin]
+              product[:data] ||= {}
+              product[:data][:manufacturer] = 'Emser'
+              product[:data][:name] = "#{name}"
+              product[:data][:style] = style
+              product[:data][:size] = size[:size]
+              product[:data][:color] = color
+              product[:product_image_url] = image_url unless product[:image_url] || image_url.nil?
+              product.save
+            end
+          end
+          
+          mozaic_urls.each do |url|
+            visit(url)
+            product_html = Nokogiri::HTML(page.html)
+            content = product_html.css('div#collectionContent').first
+            header = content.css('div#header').first
+            
+            name = header.css('div.jspPane h1').first.text
+            color = header.css('div.jspPane h1')[1].text rescue nil
+            style = header.css('div.jspPane h2').first.text.downcase rescue nil
+            
+            image_url = "#{base_url}/#{product_html.css('div#collectionContent div#thumbs').first.css('img').first.attr('src')}" rescue nil
+            
+            sizes = []
+            sizes_container = header.css('div.jspPane div').first
+            sizes_container.css('li').each do |raw_size|
+              size = raw_size.css('b').text.strip rescue nil
+              gtin = raw_size.text.split(/"/).last.strip[1..raw_size.text.split(/"/).last.strip.length] rescue nil
+              sizes << { size: size, gtin: gtin } if size.to_s.match(/^\d+\" x \d+\"$/i)
             end
             
             sizes.each do |size|
