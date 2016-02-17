@@ -18,14 +18,15 @@ module Provide
         while doc.css('td.catalogproduct').size == initial_product_count
           doc = Nokogiri::HTML(page.html)
           sleep 1.0
+          puts 'slept 1 second...'
         end
         
         products = doc.css('td.catalogproduct')
         products.each do |product|
-          title_span = products.first.css('span')[1]
+          title_span = product.css('span')[1]
           name = title_span.children[0].text.gsub(/ by builder flooring$/i, '') rescue nil
 
-          colors_href = products.first.css('a').first.attr('href') rescue nil
+          colors_href = product.css('a').first.attr('href') rescue nil
           colors_uri = "/#{colors_href.split(/\'/)[1]}" rescue nil
 
           doc = visit(colors_uri)
@@ -46,9 +47,10 @@ module Provide
             product[:data][:color] = color
             product[:product_image_url] = image_url unless product[:image_url] || image_url.nil?
             product.save
+            
+            puts "Product saved; gtin == #{product[:gtin]}"
           end
         end
-      
       end
     end
   end
