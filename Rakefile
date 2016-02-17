@@ -170,3 +170,15 @@ task :emser do
   
   binding.pry
 end
+
+task :shaw do
+  ENV['API_SCHEME'] = 'https'
+  ENV['API_HOST'] = 'provide.services'
+  ENV['API_TOKEN'] = 'b6f1bb9a-04af-43d1-af98-7e47c6227192'
+  ENV['API_TOKEN_SECRET'] = 'af258f243f6b59f3df48bf4e5ea82f02'
+  ENV['API_COMPANY_ID'] = '25'
+  require 'bundler/setup'
+  require 'provide-ruby'
+  
+  binding.pry
+end

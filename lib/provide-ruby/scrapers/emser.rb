@@ -1,14 +1,5 @@
-require 'capybara'
-require 'capybara/dsl'
-require 'capybara/poltergeist'
-
-Capybara.default_driver = :poltergeist
-Capybara.run_server = false
-
 module Provide
-  class Emser < Scraper
-    include Capybara::DSL
-    
+  class Emser < Scraper    
     class << self
       def scrape_default_zip_codes
         category_mapping.keys.each { |category| default_zip_codes.each { |zip| Resque.enqueue(ScrapeHouzzJob, zip, category) } }

@@ -23,6 +23,7 @@ require 'provide-ruby/models/work_order'
 require 'provide-ruby/scrapers/scraper'
 require 'provide-ruby/scrapers/emser'
 require 'provide-ruby/scrapers/houzz'
+require 'provide-ruby/scrapers/shaw'
 
 require 'pry'
 
