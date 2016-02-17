@@ -35,7 +35,7 @@ module Provide
             image_url = color_container.css('input[type=image]').first.attr('src') rescue nil
             next unless image_url
             color = color_container.text.strip
-            gtin = "SHAW_#{name}_#{color}".gsub(/ /, '_').upcase
+            gtin = "SHAW#{name}#{color}".gsub(/ /, '').upcase
 
             response = Product.where(company_id: API_COMPANY_ID, gtin: gtin)
             product = response && response.code == 200 ? (Product.new(JSON.parse(response.body).try(:first)) || Product.new) : Product.new
