@@ -9,9 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Kyle Thomas']
   spec.email         = ['k.thomas@unmarkedconsulting.com']
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.summary       = 'Provide ruby client library'
+  spec.homepage      = "https://github.com/provideapp/provide-ruby.git"
   spec.license       = 'MIT'
 
   # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
@@ -28,11 +27,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'activesupport', '~> 4.2'
-  spec.add_dependency 'bunny', '~> 1.7'
-  spec.add_dependency 'capybara'
-  spec.add_dependency 'nokogiri'
-  spec.add_dependency 'poltergeist'
-  spec.add_dependency 'resque'
   spec.add_dependency 'typhoeus', '~> 0.7'
 
   spec.add_development_dependency 'bundler', '~> 1.10'

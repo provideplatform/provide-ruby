@@ -1,8 +1,9 @@
 require 'typhoeus'
+require 'version'
 
 API_SCHEME = ENV['API_SCHEME'] || 'https'
 API_HOST = ENV['API_HOST'] || 'provide.services'
-API_USER_AGENT = ENV['API_USER_AGENT'] || 'provide-ruby api'
+API_USER_AGENT = ENV['API_USER_AGENT'] || "provide-ruby client library #{VERSION}"
 API_MAX_ATTEMPTS = (ENV['API_MAX_ATTEMPTS'] || 5).to_i
 
 module Provide
@@ -43,7 +44,7 @@ module Provide
         headers['Content-Type'] = 'application/json' if [:post, :put, :patch].include?(method.to_s.downcase.to_sym)
         params.merge!(headers: headers)
         Typhoeus.send(method.to_s.downcase.to_sym, "#{ApiClient.base_url}/api/#{uri}", params)
-      rescue Exception => ex
+      rescue
         attempts = attempts + 1
         retry if attempts < API_MAX_ATTEMPTS
       end
