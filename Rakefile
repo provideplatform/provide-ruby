@@ -6,5 +6,5 @@ RSpec::Core::RakeTask.new(:spec)
 task :default => :spec
 
 task :console do
-  exec 'irb -r provide-ruby -I ./lib'
+  exec 'irb --readline -r provide-ruby -I ./lib'
 end
