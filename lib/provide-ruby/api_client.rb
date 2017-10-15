@@ -8,36 +8,36 @@ API_MAX_ATTEMPTS = (ENV['API_MAX_ATTEMPTS'] || 5).to_i
 module Provide
   class ApiClient
 
-    attr_reader :base_url
+    attr_reader :base_url, :token, :secret
 
-    def initialize(scheme = API_SCHEME, host = API_HOST, path = 'api/', token, secret)
+    def initialize(scheme = API_SCHEME, host = API_HOST, path = 'api/', token = nil, secret = nil)
       @base_url = "#{scheme}://#{host}/#{path}"
       @token = token
       @secret = secret
     end
 
-    def get(uri, params = { })
-      send_request(:get, uri, params)
+    def get(uri, params = nil)
+      send_request(:get, uri, params || {})
     end
 
-    def post(uri, params = { })
-      send_request(:post, uri, params)
+    def post(uri, params = nil)
+      send_request(:post, uri, params || {})
     end
 
-    def put(uri, params = { })
-      send_request(:put, uri, params)
+    def put(uri, params = nil)
+      send_request(:put, uri, params || {})
     end
 
-    def delete(uri, params = { })
-      send_request(:delete, uri, params)
+    def delete(uri, params = nil)
+      send_request(:delete, uri, params || {})
     end
 
-    def send_request(method, uri, params)
+    def send_request(method, uri, params = nil, headers = nil)
       attempts = 0
 
       begin
         params = [:post, :put, :patch].include?(method.to_s.downcase.to_sym) ? { body: JSON.dump(params) } : { params: params }
-        headers = api_request_headers
+        headers = default_headers.merge(headers || {})
         headers['Content-Type'] = 'application/json' if [:post, :put, :patch].include?(method.to_s.downcase.to_sym)
         params.merge!(headers: headers)
         Typhoeus.send(method.to_s.downcase.to_sym, "#{base_url}#{uri}", params)
@@ -50,15 +50,16 @@ module Provide
     private
 
     def api_authorization_header
-      hashed_token = "#{@token}:#{@secret}"
-      "Basic #{Base64.urlsafe_encode64(hashed_token)}"
+      return nil unless token && secret
+      creds = "#{token}:#{secret}"
+      "Basic #{Base64.urlsafe_encode64(creds)}"
     end
 
-    def api_request_headers
-      {
-          'User-Agent'          => API_USER_AGENT,
-          'X-API-Authorization' => api_authorization_header
-      }
+    def default_headers
+      headers = {}
+      headers['User-Agent'] = API_USER_AGENT
+      headers['X-API-Authorization'] = api_authorization_header if api_authorization_header
+      headers
     end
   end
 end
