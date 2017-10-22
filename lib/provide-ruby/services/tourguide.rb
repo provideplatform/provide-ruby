@@ -62,14 +62,15 @@ module Provide
       end
 
       def places_autocomplete(query, latitude, longitude, radius = 15, type = nil, components = nil)
-        parse client.get('places/autocomplete', {
+        params = {
           :q => query,
           :latitude => latitude,
           :longitude => longitude,
           :radius => radius,
-          :type => type,
-          :components => components,
-        })
+        }
+        params[:type] = type if type
+        params[:components] = components = components if components
+        parse client.get('places/autocomplete', params)
       end
 
       def timezones(latitude, longitude)
