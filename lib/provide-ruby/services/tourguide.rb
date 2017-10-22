@@ -61,12 +61,14 @@ module Provide
         })
       end
 
-      def places_autocomplete(query, latitude, longitude, radius = 15)
+      def places_autocomplete(query, latitude, longitude, radius = 15, type = nil, components = nil)
         parse client.get('places/autocomplete', {
           :q => query,
           :latitude => latitude,
           :longitude => longitude,
           :radius => radius,
+          :type => type,
+          :components => components,
         })
       end
 
