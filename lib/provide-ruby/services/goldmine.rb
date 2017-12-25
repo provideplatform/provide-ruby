@@ -7,8 +7,20 @@ module Provide
         @host = host
       end
 
+      def networks
+        parse client.get 'networks'
+      end
+
       def prices
         parse client.get 'prices'
+      end
+
+      def wallets
+        parse client.get 'wallets'
+      end
+
+      def create_wallet(params)
+        parse client.post 'wallets', params
       end
 
       private
