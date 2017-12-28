@@ -15,6 +15,22 @@ module Provide
         parse client.get 'prices'
       end
 
+      def tokens
+        parse client.get 'tokens'
+      end
+
+      def create_token(params)
+        parse client.post 'tokens', params
+      end
+
+      def create_transaction(params)
+        parse client.post 'transactions', params
+      end
+
+      def transactions
+        parse client.get 'transactions'
+      end
+
       def wallets
         parse client.get 'wallets'
       end
