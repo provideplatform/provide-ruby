@@ -7,12 +7,12 @@ module Provide
         @host = host
       end
 
-      def balances(params)
-        parse client.get 'balances', params
-      end
-
       def networks
         parse client.get 'networks'
+      end
+
+      def network_details(network_id)
+        parse client.get "networks/#{network_id}"
       end
 
       def prices
@@ -21,6 +21,10 @@ module Provide
 
       def tokens
         parse client.get 'tokens'
+      end
+
+      def token_details(token_id)
+        parse client.get "tokens/#{token_id}"
       end
 
       def create_token(params)
@@ -35,8 +39,20 @@ module Provide
         parse client.get 'transactions'
       end
 
+      def transaction_details(tx_id)
+        parse client.get "transactions/#{tx_id}"
+      end
+
+      def wallet_balance(wallet_id, token_id)
+        parse client.get "wallets/#{wallet_id}/balances/#{token_id}", params
+      end
+
       def wallets
         parse client.get 'wallets'
+      end
+
+      def wallet_details(wallet_id)
+        parse client.get "wallets/#{wallet_id}"
       end
 
       def create_wallet(params)
