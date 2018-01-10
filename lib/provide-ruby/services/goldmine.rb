@@ -7,6 +7,10 @@ module Provide
         @host = host
       end
 
+      def balances(params)
+        parse client.get 'balances', params
+      end
+
       def networks
         parse client.get 'networks'
       end
