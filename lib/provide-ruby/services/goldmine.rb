@@ -44,7 +44,7 @@ module Provide
       end
 
       def wallet_balance(wallet_id, token_id)
-        parse client.get "wallets/#{wallet_id}/balances/#{token_id}", params
+        parse client.get "wallets/#{wallet_id}/balances/#{token_id}"
       end
 
       def wallets
