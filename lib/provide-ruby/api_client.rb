@@ -8,12 +8,11 @@ API_MAX_ATTEMPTS = (ENV['API_MAX_ATTEMPTS'] || 5).to_i
 module Provide
   class ApiClient
 
-    attr_reader :base_url, :token, :secret
+    attr_reader :base_url, :token
 
-    def initialize(scheme = API_SCHEME, host = API_HOST, path = 'api/', token = nil, secret = nil)
+    def initialize(scheme = API_SCHEME, host = API_HOST, path = 'api/', token = nil)
       @base_url = "#{scheme}://#{host}/#{path}"
       @token = token
-      @secret = secret
     end
 
     def get(uri, params = nil)
@@ -49,16 +48,10 @@ module Provide
 
     private
 
-    def api_authorization_header
-      return nil unless token && secret
-      creds = "#{token}:#{secret}"
-      "Basic #{Base64.urlsafe_encode64(creds)}"
-    end
-
     def default_headers
       headers = {}
       headers['User-Agent'] = API_USER_AGENT
-      headers['X-API-Authorization'] = api_authorization_header if api_authorization_header
+      headers['Authorization'] = "bearer #{token}" if token
       headers
     end
   end

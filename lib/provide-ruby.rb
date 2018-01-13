@@ -9,7 +9,7 @@ require 'provide-ruby/api_client'
 # require 'provide-ruby/services/bossman'
 # require 'provide-ruby/services/cliger'
 require 'provide-ruby/services/goldmine'
-# require 'provide-ruby/services/ident'
+require 'provide-ruby/services/ident'
 # require 'provide-ruby/services/revere'
 require 'provide-ruby/services/tourguide'
 
