@@ -2,9 +2,10 @@ module Provide
   module Services
     class Ident < Provide::ApiClient
 
-      def initialize(scheme = 'http', host)
+      def initialize(scheme = 'http', host, token)
         @scheme = scheme
         @host = host
+        @token = token
       end
 
       def create_application(params)
@@ -39,7 +40,7 @@ module Provide
 
       def client
         @client ||= begin
-          Provide::ApiClient.new(@scheme, @host, 'api/v1/')
+          Provide::ApiClient.new(@scheme, @host, 'api/v1/', @token)
         end
       end
 
