@@ -16,12 +16,20 @@ module Provide
         parse client.get 'applications'
       end
 
+      def application(app_id)
+        parse client.get "applications/#{app_id}"
+      end
+
       def authenticate(params)
         parse client.post 'authenticate', params
       end
 
       def tokens(params)
         parse client.get 'tokens', params
+      end
+
+      def token(token_id)
+        parse client.get("tokens/#{token_id}")
       end
 
       def delete_token(token_id)
@@ -34,6 +42,10 @@ module Provide
 
       def users
         parse client.get 'users'
+      end
+
+      def user(user_id)
+        parse client.get "users/#{user_id}"
       end
 
       private
