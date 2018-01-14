@@ -20,6 +20,10 @@ module Provide
         parse client.get "applications/#{app_id}"
       end
 
+      def application_tokens(app_id)
+        parse client.get "applications/#{app_id}/tokens"
+      end
+
       def authenticate(params)
         parse client.post 'authenticate', params
       end
