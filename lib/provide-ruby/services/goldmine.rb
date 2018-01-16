@@ -8,6 +8,14 @@ module Provide
         @token = token
       end
 
+      def contracts
+        parse client.get 'contracts'
+      end
+
+      def contract_details(contract_id)
+        parse client.get "contracts/#{contract_id}"
+      end
+
       def networks
         parse client.get 'networks'
       end
