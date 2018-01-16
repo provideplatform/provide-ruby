@@ -78,7 +78,7 @@ module Provide
 
       def parse(response)
         begin
-          body = JSON.parse(response.body) if response.code < 400
+          body = response.code == 204 ? nil : JSON.parse(response.body)
           return response.code, body
         rescue
           raise Exception.new({
