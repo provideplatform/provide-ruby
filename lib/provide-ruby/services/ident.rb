@@ -62,7 +62,8 @@ module Provide
 
       def parse(response)
         begin
-          return response.code, JSON.parse(response.body)
+          body = JSON.parse(response.body) if response.code < 400
+          return response.code, body
         rescue
           raise Exception.new({
             :code => response.code,
