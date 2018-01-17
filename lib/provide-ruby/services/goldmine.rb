@@ -24,6 +24,10 @@ module Provide
         parse client.get "networks/#{network_id}"
       end
 
+      def network_status(network_id)
+        parse client.get "networks/#{network_id}/status"
+      end
+
       def prices
         parse client.get 'prices'
       end
