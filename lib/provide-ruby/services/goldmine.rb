@@ -17,7 +17,7 @@ module Provide
       end
 
       def execute_contract(contract_id, params)
-        parse client.post "contracts/#{contract_id}/execution", params
+        parse client.post "contracts/#{contract_id}/execute", params
       end
 
       def networks
