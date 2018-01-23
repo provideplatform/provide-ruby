@@ -8,8 +8,8 @@ module Provide
         @token = token
       end
 
-      def contracts
-        parse client.get 'contracts'
+      def contracts(params = nil)
+        parse client.get 'contracts', (params || {})
       end
 
       def contract_details(contract_id)
@@ -48,8 +48,8 @@ module Provide
         parse client.post 'transactions', params
       end
 
-      def transactions
-        parse client.get 'transactions'
+      def transactions(params = nil)
+        parse client.get 'transactions', (params || {})
       end
 
       def transaction_details(tx_id)
@@ -60,8 +60,8 @@ module Provide
         parse client.get "wallets/#{wallet_id}/balances/#{token_id}"
       end
 
-      def wallets
-        parse client.get 'wallets'
+      def wallets(params = nil)
+        parse client.get 'wallets', (params || {})
       end
 
       def wallet_details(wallet_id)
