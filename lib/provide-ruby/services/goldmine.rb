@@ -16,6 +16,10 @@ module Provide
         parse client.get "contracts/#{contract_id}"
       end
 
+      def execute_contract(contract_id, params)
+        parse client.post "contracts/#{contract_id}/execution", params
+      end
+
       def networks
         parse client.get 'networks'
       end
