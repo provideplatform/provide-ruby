@@ -1,7 +1,7 @@
 require 'typhoeus'
 
 API_SCHEME = ENV['API_SCHEME'] || 'https'
-API_HOST = ENV['API_HOST'] || 'provide.services'
+API_HOST = ENV['API_HOST'] || 'prod.provide.services'
 API_USER_AGENT = ENV['API_USER_AGENT'] || 'provide-ruby client library'
 API_MAX_ATTEMPTS = (ENV['API_MAX_ATTEMPTS'] || 5).to_i
 
