@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Kyle Thomas']
   spec.email         = ['k.thomas@unmarkedconsulting.com']
 
-  spec.summary       = 'Provide ruby client library'
-  spec.homepage      = 'https://github.com/provideapp/provide-ruby.git'
+  spec.summary       = 'Ruby client library for provide.services APIs'
+  spec.homepage      = 'https://github.com/provideservices/provide-ruby.git'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
