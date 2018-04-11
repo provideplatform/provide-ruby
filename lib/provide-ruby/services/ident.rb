@@ -52,6 +52,10 @@ module Provide
         parse client.get "users/#{user_id}"
       end
 
+      def update_user(user_id, params)
+        parse client.put "users/#{user_id}", params
+      end
+  
       private
 
       def client
