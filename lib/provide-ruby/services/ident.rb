@@ -11,7 +11,11 @@ module Provide
       def create_application(params)
         parse client.post 'applications', params
       end
-
+  
+      def update_application(application_id, params)
+        parse client.put "applications/#{application_id}", params
+      end
+  
       def applications
         parse client.get 'applications'
       end
