@@ -4,6 +4,7 @@ API_SCHEME = ENV['API_SCHEME'] || 'https'
 API_HOST = ENV['API_HOST'] || 'prod.provide.services'
 API_USER_AGENT = ENV['API_USER_AGENT'] || 'provide-ruby client library'
 API_MAX_ATTEMPTS = (ENV['API_MAX_ATTEMPTS'] || 5).to_i
+API_TIMEOUT = (ENV['API_TIMEOUT'] || 120).to_i
 
 module Provide
   class ApiClient
@@ -38,7 +39,7 @@ module Provide
         params = [:post, :put, :patch].include?(method.to_s.downcase.to_sym) ? { body: JSON.dump(params) } : { params: params }
         headers = default_headers.merge(headers || {})
         headers['Content-Type'] = 'application/json' if [:post, :put, :patch].include?(method.to_s.downcase.to_sym)
-        params.merge!(headers: headers)
+        params.merge!(headers: headers, timeout: API_TIMEOUT)
         Typhoeus.send(method.to_s.downcase.to_sym, "#{base_url}#{uri}", params)
       rescue
         attempts = attempts + 1
