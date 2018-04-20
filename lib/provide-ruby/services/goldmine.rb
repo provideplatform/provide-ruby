@@ -39,7 +39,11 @@ module Provide
       def networks(params = nil)
         parse client.get 'networks', (params || {})
       end
-
+  
+      def create_network(params)
+        parse client.post 'networks', params
+      end
+  
       def network_details(network_id)
         parse client.get "networks/#{network_id}"
       end
