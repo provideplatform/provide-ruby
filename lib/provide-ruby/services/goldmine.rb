@@ -8,6 +8,18 @@ module Provide
         @token = token
       end
 
+      def bridges(params = nil)
+        parse client.get 'bridges', (params || {})
+      end
+
+      def bridge_details(bridge_id)
+        parse client.get "bridges/#{bridge_id}"
+      end
+
+      def create_bridge(params)
+        parse client.post 'bridges', params
+      end
+  
       def contracts(params = nil)
         parse client.get 'contracts', (params || {})
       end
@@ -24,8 +36,8 @@ module Provide
         parse client.post "contracts/#{contract_id}/execute", params
       end
 
-      def networks
-        parse client.get 'networks'
+      def networks(params = nil)
+        parse client.get 'networks', (params || {})
       end
 
       def network_details(network_id)
@@ -36,12 +48,24 @@ module Provide
         parse client.get "networks/#{network_id}/status"
       end
 
-      def prices
-        parse client.get 'prices'
+      def oracles(params = nil)
+        parse client.get 'oracles', (params || {})
       end
 
-      def tokens
-        parse client.get 'tokens'
+      def oracle_details(oracle_id)
+        parse client.get "oracles/#{oracle_id}"
+      end
+
+      def create_oracle(params)
+        parse client.post 'oracles', params
+      end
+
+      def prices(params = nil)
+        parse client.get 'prices', (params || {})
+      end
+
+      def tokens(params = nil)
+        parse client.get 'tokens', (params || {})
       end
 
       def token_details(token_id)
