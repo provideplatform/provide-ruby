@@ -53,7 +53,7 @@ module Provide
       end
 
       def network_nodes(network_id, params = nil)
-        parse client.get "networks/#{network_id}/nodes", (params | {})
+        parse client.get "networks/#{network_id}/nodes", (params || {})
       end
   
       def create_network_node(network_id, params)
