@@ -52,6 +52,22 @@ module Provide
         parse client.get "networks/#{network_id}/status"
       end
 
+      def network_nodes(network_id, params = nil)
+        parse client.get "networks/#{network_id}/nodes", (params | {})
+      end
+  
+      def create_network_node(network_id, params)
+        parse client.post "networks/#{network_id}/nodes", params
+      end
+  
+      def network_node_details(network_id, node_id)
+        parse client.get "networks/#{network_id}/nodes/#{node_id}"
+      end
+  
+      def destroy_network_node(network_id, node_id)
+        parse client.delete "networks/#{network_id}/nodes/#{node_id}"
+      end
+
       def oracles(params = nil)
         parse client.get 'oracles', (params || {})
       end
