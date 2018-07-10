@@ -68,6 +68,10 @@ module Provide
         parse client.get "networks/#{network_id}/nodes/#{node_id}"
       end
   
+      def network_node_logs(network_id, node_id)
+        parse client.get "networks/#{network_id}/nodes/#{node_id}/logs"
+      end
+
       def destroy_network_node(network_id, node_id)
         parse client.delete "networks/#{network_id}/nodes/#{node_id}"
       end
