@@ -20,6 +20,18 @@ module Provide
         parse client.post 'bridges', params
       end
   
+      def connectors(params = nil)
+        parse client.get 'connectors', (params || {})
+      end
+
+      def connector_details(connector_id)
+        parse client.get "connectors/#{connector_id}"
+      end
+
+      def create_connector(params)
+        parse client.post 'connectors', params
+      end
+
       def contracts(params = nil)
         parse client.get 'contracts', (params || {})
       end
