@@ -32,6 +32,10 @@ module Provide
         parse client.post 'connectors', params
       end
 
+      def destroy_connector(connector_id)
+        parse client.delete "connectors/#{connector_id}"
+      end
+
       def contracts(params = nil)
         parse client.get 'contracts', (params || {})
       end
