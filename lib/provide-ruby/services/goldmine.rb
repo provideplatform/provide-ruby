@@ -68,6 +68,22 @@ module Provide
         parse client.get "networks/#{network_id}"
       end
 
+      def network_accounts(network_id)
+        parse client.get "networks/#{network_id}/accounts"
+      end
+
+      def network_blocks(network_id)
+        parse client.get "networks/#{network_id}/blocks"
+      end
+  
+      def network_contracts(network_id)
+        parse client.get "networks/#{network_id}/contracts"
+      end
+    
+      def network_transactions(network_id)
+        parse client.get "networks/#{network_id}/transactions"
+      end
+
       def network_status(network_id)
         parse client.get "networks/#{network_id}/status"
       end
