@@ -87,6 +87,10 @@ module Provide
       def network_contracts(network_id, params)
         parse client.get "networks/#{network_id}/contracts", params
       end
+  
+      def network_contract_details(network_id, contract_id)
+        parse client.get "networks/#{network_id}/contracts/#{contract_id}"
+      end
 
       def network_oracles(network_id, params)
         parse client.get "networks/#{network_id}/oracles", params
