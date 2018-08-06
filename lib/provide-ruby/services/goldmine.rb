@@ -75,11 +75,23 @@ module Provide
       def network_blocks(network_id, params)
         parse client.get "networks/#{network_id}/blocks", params
       end
+
+      def network_bridges(network_id, params)
+        parse client.get "networks/#{network_id}/bridges", params
+      end
+  
+      def network_connectors(network_id, params)
+        parse client.get "networks/#{network_id}/connectors", params
+      end
   
       def network_contracts(network_id, params)
         parse client.get "networks/#{network_id}/contracts", params
       end
-    
+
+      def network_oracles(network_id, params)
+        parse client.get "networks/#{network_id}/oracles", params
+      end
+
       def network_transactions(network_id, params)
         parse client.get "networks/#{network_id}/transactions", params
       end
