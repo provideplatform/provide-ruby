@@ -96,6 +96,10 @@ module Provide
         parse client.get "networks/#{network_id}/oracles", params
       end
 
+      def network_tokens(network_id, params)
+        parse client.get "networks/#{network_id}/tokens", params
+      end
+
       def network_transactions(network_id, params)
         parse client.get "networks/#{network_id}/transactions", params
       end
