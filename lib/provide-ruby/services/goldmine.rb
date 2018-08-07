@@ -104,6 +104,10 @@ module Provide
         parse client.get "networks/#{network_id}/transactions", params
       end
 
+      def network_transaction_details(network_id, transaction_id)
+        parse client.get "networks/#{network_id}/transactions/#{transaction_id}"
+      end
+
       def network_status(network_id)
         parse client.get "networks/#{network_id}/status"
       end
