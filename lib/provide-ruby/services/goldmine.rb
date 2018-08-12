@@ -199,7 +199,7 @@ module Provide
       def parse(response)
         begin
           body = response.code == 204 ? nil : JSON.parse(response.body)
-          return response.code, body
+          return response.code, response.headers, body
         rescue
           raise Exception.new({
             :code => response.code,
