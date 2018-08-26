@@ -8,32 +8,32 @@ module Provide
         @token = token
       end
 
-      def create_application(params)
-        parse client.post 'applications', params
+      def create_application(params = nil)
+        parse client.post 'applications', (params || {})
       end
   
       def update_application(application_id, params)
         parse client.put "applications/#{application_id}", params
       end
   
-      def applications
-        parse client.get 'applications'
+      def applications(params = nil)
+        parse client.get 'applications', (params || {})
       end
 
       def application(app_id)
         parse client.get "applications/#{app_id}"
       end
 
-      def application_tokens(app_id)
-        parse client.get "applications/#{app_id}/tokens"
+      def application_tokens(app_id, params = nil)
+        parse client.get "applications/#{app_id}/tokens", (params || {})
       end
 
       def authenticate(params)
         parse client.post 'authenticate', params
       end
 
-      def tokens(params)
-        parse client.get 'tokens', params
+      def tokens(params = nil)
+        parse client.get 'tokens', (params || {})
       end
 
       def token(token_id)
@@ -48,8 +48,8 @@ module Provide
         parse client.post 'users', params
       end
 
-      def users
-        parse client.get 'users'
+      def users(params = nil)
+        parse client.get 'users', (params || {})
       end
 
       def user(user_id)
