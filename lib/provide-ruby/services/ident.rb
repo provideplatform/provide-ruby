@@ -40,6 +40,10 @@ module Provide
         parse client.get("tokens/#{token_id}")
       end
 
+      def create_token(params)
+        parse client.post 'tokens', params
+      end
+
       def delete_token(token_id)
         parse client.delete("tokens/#{token_id}")
       end
