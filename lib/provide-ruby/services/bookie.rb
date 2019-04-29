@@ -24,16 +24,16 @@ module Provide
         parse client.post 'channels', params
       end
   
-      def update_channel(application_id, params)
-        parse client.put "channels/#{application_id}", params
+      def update_channel(channel_id, params)
+        parse client.put "channels/#{channel_id}", params
       end
   
-      def channels
-        parse client.get 'channels'
+      def channels(params = nil)
+        parse client.get 'channels', (params || {})
       end
   
-      def network
-        parse client.get 'network'
+      def network(params = nil)
+        parse client.get 'network', (params || {})
       end
 
       def network_invite(params)
