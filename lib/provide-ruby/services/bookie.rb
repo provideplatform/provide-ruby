@@ -44,31 +44,18 @@ module Provide
 
       def client
         @client ||= begin
-<<<<<<< HEAD
         Provide::ApiClient.new(@scheme, @host, 'api/v1/', @token)
-=======
-          Provide::ApiClient.new(@scheme, @host, 'api/v1/', @token)
->>>>>>> Add bookie service
         end
       end
 
       def parse(response)
         begin
-<<<<<<< HEAD
-        body = response.code == 204 ? nil : JSON.parse(response.body)
-        return response.code, response.headers, body
-        rescue
-        raise Exception.new({
-            :code => response.code,
-        })
-=======
           body = response.code == 204 ? nil : JSON.parse(response.body)
           return response.code, body
         rescue
           raise Exception.new({
             :code => response.code,
           })
->>>>>>> Add bookie service
         end
       end
     end
