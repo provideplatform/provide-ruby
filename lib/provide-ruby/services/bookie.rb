@@ -8,6 +8,22 @@ module Provide
         @token = token
       end
 
+      def payment_hubs(params = nil)
+        parse client.get 'payment_hubs', (params || {})
+      end
+
+      def payment_hub_details(payment_hub_id)
+        parse client.get "payment_hubs/#{payment_hub_id}"
+      end
+
+      def create_payment_hub(params)
+        parse client.post 'payment_hubs', params
+      end
+
+      def delete_payment_hub(payment_hub_id)
+        parse client.delete "payment_hubs/#{payment_hub_id}"
+      end
+
       def payment_methods(params = nil)
         parse client.get 'payment_methods', (params || {})
       end
