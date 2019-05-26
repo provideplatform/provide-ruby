@@ -35,19 +35,27 @@ module Provide
       def delete_payment_method(payment_method_id)
         parse client.delete "payment_methods/#{payment_method_id}"
       end
-
-      def create_channel(params)
-        parse client.post 'channels', params
-      end
-  
-      def update_channel(channel_id, params)
-        parse client.put "channels/#{channel_id}", params
-      end
   
       def channels(params = nil)
         parse client.get 'channels', (params || {})
       end
   
+      def create_channel(params)
+        parse client.post 'channels', params
+      end
+  
+      def update_channel_state(channel_id, params)
+        parse client.post "channels/#{channel_id}/states", params
+      end
+
+      def create_thread(channel_id, params)
+        parse client.post "channels/#{channel_id}/threads", params
+      end
+
+      def update_thread_state(channel_id, thread_id, params)
+        parse client.post "channels/#{channel_id}/threads/#{thread_id}/states", params
+      end
+
       def network(params = nil)
         parse client.get 'network', (params || {})
       end
