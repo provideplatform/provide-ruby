@@ -39,7 +39,11 @@ module Provide
       def channels(params = nil)
         parse client.get 'channels', (params || {})
       end
-  
+
+      def channel_details(channel_id)
+        parse client.get "channels/#{channel_id}"
+      end
+
       def create_channel(params)
         parse client.post 'channels', params
       end
