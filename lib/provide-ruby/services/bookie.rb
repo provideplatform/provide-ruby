@@ -8,6 +8,14 @@ module Provide
         @token = token
       end
 
+      def connect(params = nil)
+        parse client.get 'connect', (params || {})
+      end
+
+      def create_connection(params)
+        parse client.post 'connect', params
+      end
+
       def payment_hubs(params = nil)
         parse client.get 'payment_hubs', (params || {})
       end
