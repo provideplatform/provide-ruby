@@ -63,7 +63,19 @@ module Provide
       def update_user(user_id, params)
         parse client.put "users/#{user_id}", params
       end
-  
+
+      def user_kyc_applications(user_id, params)
+        parse client.get "users/#{user_id}/kyc_applications", (params || {})
+      end
+
+      def create_kyc_application(params = nil)
+        parse client.post 'kyc_applications', (params || {})
+      end
+
+      def kyc_application(kyc_application_id)
+        parse client.get "kyc_applications/#{kyc_application_id}"
+      end
+
       private
 
       def client
