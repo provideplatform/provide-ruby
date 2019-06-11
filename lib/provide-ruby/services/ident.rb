@@ -76,6 +76,10 @@ module Provide
         parse client.get "kyc_applications/#{kyc_application_id}"
       end
 
+      def kyc_applications(params = nil)
+        parse client.get 'kyc_applications', (params || {})
+      end
+
       private
 
       def client
