@@ -8,6 +8,22 @@ module Provide
         @token = token
       end
 
+      def billing_accounts(params = nil)
+        parse client.get 'billing_accounts', (params || {})
+      end
+
+      def billing_account_details(billing_account_id)
+        parse client.get "billing_accounts/#{billing_account_id}"
+      end
+
+      def create_billing_account(params)
+        parse client.post 'billing_accounts', params
+      end
+
+      def update_billing_account(billing_account_id, params)
+        parse client.put "billing_accounts/#{billing_account_id}", params
+      end
+
       def connect(params = nil)
         parse client.get 'connect', (params || {})
       end
