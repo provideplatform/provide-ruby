@@ -1,3 +1,3 @@
 module Provide
-  VERSION = '0.58.0'
+  VERSION = '0.59.0'
 end
