@@ -2,9 +2,10 @@ module Provide
   module Services
     class Tourguide < Provide::ApiClient
 
-      def initialize(scheme = 'http', host)
+      def initialize(scheme = 'http', host, token)
         @scheme = scheme
         @host = host
+        @token = token
       end
 
       def directions(from_latitude, from_longitude, to_latitude, to_longitude, waypoints = nil, departure = 'now', alternatives = 0)
@@ -84,7 +85,7 @@ module Provide
 
       def client
         @client ||= begin
-          Provide::ApiClient.new(@scheme, @host, 'api/v1/')
+          Provide::ApiClient.new(@scheme, @host, 'api/v1/', @token)
         end
       end
 
