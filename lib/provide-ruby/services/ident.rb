@@ -64,6 +64,11 @@ module Provide
         parse client.put "users/#{user_id}", params
       end
 
+      def reset_password(email, token = nil, password = nil)
+        return parse client.post "users/reset_password/#{token}", {email: email, password: password} if token
+        parse client.post "users/reset_password", {email: email}
+      end
+
       def user_kyc_applications(user_id, params)
         parse client.get "users/#{user_id}/kyc_applications", (params || {})
       end
