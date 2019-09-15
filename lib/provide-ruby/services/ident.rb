@@ -77,6 +77,10 @@ module Provide
         parse client.post 'kyc_applications', (params || {})
       end
 
+      def update_kyc_application(kyc_application_id, params = nil)
+        parse client.put "kyc_applications/#{kyc_application_id}", (params || {})
+      end
+
       def kyc_application(kyc_application_id)
         parse client.get "kyc_applications/#{kyc_application_id}"
       end
