@@ -28,7 +28,7 @@ module Provide
         parse client.get "connectors/#{connector_id}"
       end
 
-      def connector_nodes(connector_id, {})
+      def connector_nodes(connector_id, params = nil)
         parse client.get "connectors/#{connector_id}/nodes", (params || {})
       end
 
