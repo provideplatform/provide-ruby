@@ -28,6 +28,10 @@ module Provide
         parse client.get "connectors/#{connector_id}"
       end
 
+      def connector_nodes(connector_id, {})
+        parse client.get "connectors/#{connector_id}/nodes", (params || {})
+      end
+
       def create_connector(params)
         parse client.post 'connectors', params
       end
