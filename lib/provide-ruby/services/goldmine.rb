@@ -28,6 +28,10 @@ module Provide
         parse client.get "connectors/#{connector_id}"
       end
 
+      def connector_load_balancers(connector_id, params = nil)
+        parse client.get "connectors/#{connector_id}/load_balancers", (params || {})
+      end
+
       def connector_nodes(connector_id, params = nil)
         parse client.get "connectors/#{connector_id}/nodes", (params || {})
       end
@@ -47,11 +51,11 @@ module Provide
       def contract_details(contract_id)
         parse client.get "contracts/#{contract_id}"
       end
-  
+
       def create_contract(params)
         parse client.post 'contracts', params
       end
-  
+
       def execute_contract(contract_id, params)
         parse client.post "contracts/#{contract_id}/execute", params
       end
@@ -59,7 +63,7 @@ module Provide
       def networks(params = nil)
         parse client.get 'networks', (params || {})
       end
-  
+
       def create_network(params)
         parse client.post 'networks', params
       end
@@ -83,17 +87,25 @@ module Provide
       def network_bridges(network_id, params)
         parse client.get "networks/#{network_id}/bridges", params
       end
-  
+
       def network_connectors(network_id, params)
         parse client.get "networks/#{network_id}/connectors", params
       end
-  
+
       def network_contracts(network_id, params)
         parse client.get "networks/#{network_id}/contracts", params
       end
-  
+
       def network_contract_details(network_id, contract_id)
         parse client.get "networks/#{network_id}/contracts/#{contract_id}"
+      end
+
+      def network_load_balancers(network_id, params)
+        parse client.get "networks/#{network_id}/load_balancers", params
+      end
+
+      def update_network_load_balancers(network_id, load_balancer_id, params)
+        parse client.put "networks/#{network_id}/load_balancers/#{load_balancer_id}", params
       end
 
       def network_oracles(network_id, params)
@@ -119,15 +131,15 @@ module Provide
       def network_nodes(network_id, params = nil)
         parse client.get "networks/#{network_id}/nodes", (params || {})
       end
-  
+
       def create_network_node(network_id, params)
         parse client.post "networks/#{network_id}/nodes", params
       end
-  
+
       def network_node_details(network_id, node_id)
         parse client.get "networks/#{network_id}/nodes/#{node_id}"
       end
-  
+
       def network_node_logs(network_id, node_id, params = nil)
         parse client.get "networks/#{network_id}/nodes/#{node_id}/logs", (params || {})
       end
