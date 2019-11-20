@@ -16,6 +16,10 @@ module Provide
         parse client.get "accounts/#{account_id}"
       end
 
+      def account_balance(account_id, token_id)
+        parse client.get "accounts/#{account_id}/balances/#{token_id}"
+      end
+
       def create_account(params)
         parse client.post 'accounts', params
       end
@@ -198,10 +202,6 @@ module Provide
 
       def transaction_details(tx_id)
         parse client.get "transactions/#{tx_id}"
-      end
-
-      def wallet_balance(wallet_id, token_id)
-        parse client.get "wallets/#{wallet_id}/balances/#{token_id}"
       end
 
       def wallets(params = nil)
