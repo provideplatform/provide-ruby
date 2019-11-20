@@ -8,6 +8,18 @@ module Provide
         @token = token
       end
 
+      def accounts(params = nil)
+        parse client.get 'accounts', (params || {})
+      end
+
+      def account_details(account_id)
+        parse client.get "accounts/#{account_id}"
+      end
+
+      def create_account(params)
+        parse client.post 'accounts', params
+      end
+
       def bridges(params = nil)
         parse client.get 'bridges', (params || {})
       end
@@ -19,7 +31,7 @@ module Provide
       def create_bridge(params)
         parse client.post 'bridges', params
       end
-  
+
       def connectors(params = nil)
         parse client.get 'connectors', (params || {})
       end
