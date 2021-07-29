@@ -7,10 +7,10 @@ Gem::Specification.new do |spec|
   spec.name          = 'provide-ruby'
   spec.version       = Provide::VERSION
   spec.authors       = ['Kyle Thomas']
-  spec.email         = ['k.thomas@unmarkedconsulting.com']
+  spec.email         = ['kyle@provide.services']
 
-  spec.summary       = 'Ruby client library for provide.services APIs'
-  spec.homepage      = 'https://github.com/provideservices/provide-ruby.git'
+  spec.summary       = 'Provide Ruby API client library'
+  spec.homepage      = 'https://github.com/provideplatform/provide-ruby.git'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
