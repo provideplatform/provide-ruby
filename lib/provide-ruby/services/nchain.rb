@@ -1,6 +1,6 @@
 module Provide
   module Services
-    class Goldmine < Provide::ApiClient
+    class NChain < Provide::ApiClient
 
       def initialize(scheme = 'http', host, token)
         @scheme = scheme

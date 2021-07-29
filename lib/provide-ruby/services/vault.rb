@@ -48,20 +48,12 @@ module Provide
             parse client.delete "vaults/#{vault_id}/secrets/#{secret_id}"
         end
 
-        def create_vault
-            parse client.post 'vaults'
+        def create_vault(params)
+            parse client.post 'vaults', params
         end
 
-        def list_vaults
-            parse client.get 'vaults'
-        end
-
-        def create_seal_unseal_key
-            parse client.post 'unsealerkey'
-        end
-
-        def unseal_vault(key) # TODO: unfinished in postman
-            parse client.post 'unseal', key
+        def list_vaults(params = nil)
+            parse client.get 'vaults', (params || {})
         end
 
         private
