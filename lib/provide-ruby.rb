@@ -5,7 +5,7 @@ require 'provide-ruby/version'
 require 'provide-ruby/api_client'
 
 require 'provide-ruby/services/bookie'
-require 'provide-ruby/services/goldmine'
+require 'provide-ruby/services/nchain'
 require 'provide-ruby/services/ident'
 require 'provide-ruby/services/tourguide'
 
